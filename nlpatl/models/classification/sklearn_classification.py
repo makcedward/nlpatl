@@ -5,16 +5,28 @@ from sklearn.linear_model import (
 	LogisticRegression
 )
 from sklearn.svm import (
-	SVC
+	SVC,
+	LinearSVC
 )
+try:
+	from xgboost import XGBClassifier
+except ImportError:
+    # No installation required if not using this function
+    pass
 
 from nlpatl.models.classification.classification import Classification
 from nlpatl.storage.storage import Storage
 
 MODEL_FOR_SKLEARN_CLASSIFICATION_MAPPING_NAMES = {
     'logistic_regression': LogisticRegression,
-    'svc': SVC
+    'svc': SVC,
+    'linear_svc': LinearSVC
 }
+try:
+	MODEL_FOR_SKLEARN_CLASSIFICATION_MAPPING_NAMES['xgboost'] = XGBClassifier
+except NameError:
+	# No installation required if not using this class
+    pass	
 
 
 class SkLearnClassification(Classification):
@@ -63,6 +75,3 @@ class SkLearnClassification(Classification):
 				values=probs[indices])
 
 		return results
-
-
-

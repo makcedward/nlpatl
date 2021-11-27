@@ -30,15 +30,29 @@ class TestModelLabelingEntropySampling(unittest.TestCase):
 		assert 'Classification model does not initialize yet' in str(error.exception), \
 			'Does not initialize classification model but still able to run'
 
-	def test_genearte(self):
+	def test_genearte_by_sklearn(self):
 		labeling = EntropySampling()
 
 		labeling.init_embeddings_model(
 			'bert-base-uncased', return_tensors='pt', padding=True, 
 			batch_size=3)
-		labeling.init_classification_model(
-			'logistic_regression')
+		labeling.init_classification_model('logistic_regression')
 	
 		outputs = labeling.generate(self.train_texts, self.train_labels, self.test_texts)
+		assert outputs, 'No output'
 
+	def test_genearte_by_xgboost(self):
+		labeling = EntropySampling()
+
+		labeling.init_embeddings_model(
+			'bert-base-uncased', return_tensors='pt', padding=True, 
+			batch_size=3)
+
+		model_config = {
+			'use_label_encoder': False,
+			'eval_metric': 'logloss'
+		}
+		labeling.init_classification_model('xgboost', model_config=model_config)
+	
+		outputs = labeling.generate(self.train_texts, self.train_labels, self.test_texts)
 		assert outputs, 'No output'

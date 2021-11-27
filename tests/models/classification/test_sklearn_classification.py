@@ -1,5 +1,6 @@
 import unittest
 import sklearn
+import xgboost
 
 from nlpatl.models.classification.sklearn_classification import SkLearnClassification
 
@@ -40,6 +41,16 @@ class TestModelClassificationSkLearn(unittest.TestCase):
 			'Invalid when passing emtpy parameters'
 		assert type(classification.model) is sklearn.svm._classes.SVC, \
 			'Unable to initialize SVM'
+
+		classification = SkLearnClassification('linear_svc')
+		assert type(classification.model) is sklearn.svm._classes.LinearSVC, \
+			'Unable to initialize Linear SVM'
+
+		model_config = {}
+		classification = SkLearnClassification('xgboost', 
+			model_config=model_config)
+		assert type(classification.model) is xgboost.sklearn.XGBClassifier, \
+			'Unable to initialize XGBoost'
 
 	def test_classify(self):
 		classification = SkLearnClassification('logistic_regression')
