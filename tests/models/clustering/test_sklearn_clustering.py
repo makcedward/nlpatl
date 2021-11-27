@@ -1,9 +1,9 @@
 import unittest
 
-from nlpatl.models.clustering.sklearn import SkLearn
+from nlpatl.models.clustering.sklearn_clustering import SkLearnClustering
 
 
-class TestModelClusteringKmeans(unittest.TestCase):
+class TestModelClusteringSkLearn(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
 		cls.train_features = [
@@ -16,22 +16,22 @@ class TestModelClusteringKmeans(unittest.TestCase):
 		]
 
 	def test_parameters(self):
-		clustering = SkLearn()
+		clustering = SkLearnClustering()
 		assert 8 == clustering.model.n_clusters, \
 			'Invalid when using default parameters'
 
 		model_config = {}
-		clustering = SkLearn(model_config=model_config)
+		clustering = SkLearnClustering(model_config=model_config)
 		assert 8 == clustering.model.n_clusters, \
 			'Invalid when passing emtpy parameters'
 
 		model_config = {'n_clusters': 4}
-		clustering = SkLearn(model_config=model_config)
+		clustering = SkLearnClustering(model_config=model_config)
 		assert 4 == clustering.model.n_clusters, \
 			'Invalid when passing parameter'
 
 	def test_cluster(self):
-		clustering = SkLearn()
+		clustering = SkLearnClustering()
 		clustering.train(self.train_features)
 		results = clustering.predict_prob(self.train_features)
 

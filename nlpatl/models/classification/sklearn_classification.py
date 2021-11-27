@@ -4,16 +4,20 @@ from collections import defaultdict
 from sklearn.linear_model import (
 	LogisticRegression
 )
+from sklearn.svm import (
+	SVC
+)
 
 from nlpatl.models.classification.classification import Classification
 from nlpatl.storage.storage import Storage
 
 MODEL_FOR_SKLEARN_CLASSIFICATION_MAPPING_NAMES = {
     'logistic_regression': LogisticRegression,
+    'svc': SVC
 }
 
 
-class SkLearn(Classification):
+class SkLearnClassification(Classification):
 	def __init__(self, model_name: str = 'logistic_regression', model_config: dict = {}, 
 		name: str = 'sklearn'):
 

@@ -13,7 +13,7 @@ MODEL_FOR_SKLEARN_CLUSTERING_MAPPING_NAMES = {
 }
 
 
-class SkLearn(Clustering):
+class SkLearnClustering(Clustering):
 	def __init__(self, model_name: str = 'kmeans', model_config: dict = {}, 
 		name: str = 'kmeans'):
 

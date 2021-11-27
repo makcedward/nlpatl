@@ -1,6 +1,7 @@
 import unittest
+import sklearn
 
-from nlpatl.models.classification.sklearn import SkLearn
+from nlpatl.models.classification.sklearn_classification import SkLearnClassification
 
 
 class TestModelClassificationSkLearn(unittest.TestCase):
@@ -16,24 +17,32 @@ class TestModelClassificationSkLearn(unittest.TestCase):
 		]
 
 	def test_parameters(self):
-		classification = SkLearn('logistic_regression')
+		classification = SkLearnClassification('logistic_regression')
 		assert 'l2' == classification.model.penalty, \
 			'Invalid when using default parameters'
 
 		model_config = {}
-		classification = SkLearn('logistic_regression', 
+		classification = SkLearnClassification('logistic_regression', 
 			model_config=model_config)
 		assert 'l2' == classification.model.penalty, \
 			'Invalid when passing emtpy parameters'
 
 		model_config = {'penalty': 'l1'}
-		classification = SkLearn('logistic_regression', 
+		classification = SkLearnClassification('logistic_regression', 
 			model_config=model_config)
 		assert 'l1' == classification.model.penalty, \
 			'Invalid when passing parameter'
 
+		model_config = {'gamma': 'auto'}
+		classification = SkLearnClassification('svc', 
+			model_config=model_config)
+		assert 'auto' == classification.model.gamma, \
+			'Invalid when passing emtpy parameters'
+		assert type(classification.model) is sklearn.svm._classes.SVC, \
+			'Unable to initialize SVM'
+
 	def test_classify(self):
-		classification = SkLearn('logistic_regression')
+		classification = SkLearnClassification('logistic_regression')
 		classification.train(self.train_features, self.train_labels)
 		results = classification.predict_proba(self.train_features)
 

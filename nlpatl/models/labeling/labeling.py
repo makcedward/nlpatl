@@ -1,11 +1,11 @@
 from typing import List
 
 from nlpatl.models.embeddings.transformers import Transformers
-from nlpatl.models.clustering.sklearn import (
-	SkLearn as SkLearnCluster
+from nlpatl.models.clustering.sklearn_clustering import (
+	SkLearnClustering
 )
-from nlpatl.models.classification.sklearn import (
-	SkLearn as SkLearnClassifier
+from nlpatl.models.classification.sklearn_classification import (
+	SkLearnClassification
 )
 from nlpatl.storage.storage import Storage
 
@@ -36,12 +36,12 @@ class Labeling:
 	def init_clustering_model(self, model_name: str = 'kmeans', model: object = None, 
 		model_config: dict = {}):
 
-		possible_models = SkLearnCluster.get_mapping().keys()
+		possible_models = SkLearnClustering.get_mapping().keys()
 
 		if model:
 			self.model = model
 		elif model_name in possible_models:
-			self.clustering_model = SkLearnCluster(model_name, model_config)
+			self.clustering_model = SkLearnClustering(model_name, model_config)
 			self.model_config = model_config
 		else:
 			raise ValueError('`{}` does not support. Supporting {} only'.format(
@@ -51,12 +51,12 @@ class Labeling:
 		model: object = None, model_config: dict = {}):
 		# model: object = None, batch_size: int = 32, model_config: dict = {}):
 
-		possible_models = SkLearnClassifier.get_mapping().keys()
+		possible_models = SkLearnClassification.get_mapping().keys()
 
 		if model:
 			self.model = model
 		elif model_name in possible_models:
-			self.classification_model = SkLearnClassifier(model_name, model_config)
+			self.classification_model = SkLearnClassification(model_name, model_config)
 			self.model_config = model_config
 		else:
 			raise ValueError('`{}` does not support. Supporting {} only'.format(
