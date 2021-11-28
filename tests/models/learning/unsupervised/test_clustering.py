@@ -2,38 +2,38 @@ import unittest
 import datasets
 from datasets import load_dataset
 
-from nlpatl.models.labeling.unsupervised.transfer import TransferSamlping
+from nlpatl.models.learning.unsupervised.clustering import ClusteringSamlping
 
 
-class TestModelLabelingColdStart(unittest.TestCase):
+class TestModelLearningClusteringSamlping(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
 		cls.train_texts = load_dataset('ag_news')['train']['text'][:20]
 
 	def test_no_model(self):
-		labeling = TransferSamlping()
+		learning = ClusteringSamlping()
 
 		with self.assertRaises(Exception) as error:
-			labeling.generate(self.train_texts)
+			learning.query(self.train_texts)
 		assert 'Embeddings model does not initialize yet' in str(error.exception), \
 			'Does not initialize embeddings model but still able to run'
 
-		labeling.init_embeddings_model(
+		learning.init_embeddings_model(
 			'distilbert-base-uncased', return_tensors='pt', padding=True, 
 			batch_size=3)
 		with self.assertRaises(Exception) as error:
-			labeling.generate(self.train_texts)
+			learning.query(self.train_texts)
 		assert 'Clustering model does not initialize yet' in str(error.exception), \
 			'Does not initialize clustering model but still able to run'
 
 	def test_genearte(self):
-		labeling = TransferSamlping()
-		labeling.init_embeddings_model(
+		learning = ClusteringSamlping()
+		learning.init_embeddings_model(
 			'bert-base-uncased', return_tensors='pt', padding=True, 
 			batch_size=3)
-		labeling.init_clustering_model(
+		learning.init_clustering_model(
 			'kmeans', model_config={})
 
-		outputs = labeling.generate(self.train_texts)
+		outputs = learning.query(self.train_texts)
 
 		assert outputs, 'No output'

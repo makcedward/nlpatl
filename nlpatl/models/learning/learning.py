@@ -1,4 +1,5 @@
 from typing import List
+import numpy as np
 
 from nlpatl.models.embeddings.transformers import Transformers
 from nlpatl.models.clustering.sklearn_clustering import (
@@ -10,9 +11,18 @@ from nlpatl.models.classification.sklearn_classification import (
 from nlpatl.storage.storage import Storage
 
 
-class Labeling:
-	def __init__(self, name='labeling'):
+class Learning:
+	RETURN_TYPES = ['dict', 'object']
+
+	def __init__(self, x: [List[str], List[float], np.ndarray] = None,
+		y: [List[str], List[int], np.ndarray] = None,
+		name: str = 'learning'):
+
 		self.name = name
+		self.train_x = x
+		self.train_y = y
+		self.test_x = None
+		self.test_y = None
 		self.embeddings_model = None
 		self.clustering_model = None
 		self.classification_model = None
@@ -78,8 +88,30 @@ class Labeling:
 			assert self.classification_model is not None, \
 				'Classification model does not initialize yet. Run `init_classification_model` first'
 
+	def get_return_object(self, d, return_type):
+		assert return_type in self.RETURN_TYPES, \
+				'`return_type` should be one of [`{}`] but not `{}`'.format(
+					'`,`'.join(self.RETURN_TYPES), return_type)
+
+		if return_type == 'dict':
+			return d.__dict__
+		elif return_type == 'object':
+			return d
+
+	def filter(self, data: [List[str], List[float], np.ndarray], 
+		indices: np.ndarray) -> [List[str], List[float], np.ndarray]:
+
+		if type(data) is np.ndarray:
+			return data[indices]
+		else:
+			return [data[i] for i in indices.tolist()]
+
 	def train(self, x: object, y: object):
 		...
 
 	def keep_most_representative(self, data: Storage, num_sample: int) -> Storage: 
+		...
+
+	def query(self, inputs: List[str], return_type: str = 'dict', 
+		num_sample: int = 2) -> List[object]:
 		...

@@ -1,14 +1,16 @@
 from typing import List
 from collections import defaultdict
-import operator
+import numpy as np
 
-from nlpatl.models.labeling.labeling import Labeling
+from nlpatl.models.learning.learning import Learning
 from nlpatl.storage.storage import Storage
 
 
-class TransferSamlping(Labeling):
-	def __init__(self, name: str = 'cold_start'):
-		super().__init__(name)
+class ClusteringSamlping(Learning):
+	def __init__(self, x: [List[str], List[float], np.ndarray] = None,
+		name: str = 'clustering_samlping'):
+
+		super().__init__(name=name, x=x)
 
 	def validate(self):
 		super().validate(['embeddings', 'clustering'])
@@ -22,7 +24,9 @@ class TransferSamlping(Labeling):
 
 		return data
 
-	def generate(self, inputs: List[str], num_sample: int = 2) -> List[str]:
+	def query(self, inputs: List[str], return_type: str = 'dict', 
+		num_sample: int = 2) -> List[object]:
+
 		self.validate()
 
 		features = self.embeddings_model.convert(inputs)
@@ -32,7 +36,10 @@ class TransferSamlping(Labeling):
 		
 		results = defaultdict(list)
 		for label, pred in preds.items():
-			results[label] = self.keep_most_representative(
+			result = self.keep_most_representative(
 				pred, num_sample=num_sample)
+			result.features = self.filter(inputs, result.indices)
+
+			results[label] = self.get_return_object(result, return_type)
 			
 		return results
