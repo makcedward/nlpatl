@@ -36,7 +36,13 @@ class Transformers(Embeddings):
 				truncation=self.truncation)
 
 			with torch.no_grad():
-				results.append(self.model(**ids)['pooler_output'])
+				output = self.model(**ids)
+				assert 'pooler_output' in output.keys(), \
+					'This model (`{}`) does not provide single embeddings for ' \
+					'input. Switch to use other type of transformers model such as '\
+					'`bert-base-uncased` or `roberta-base`.'.format(self.model_name_or_path)
+
+				results.append(output['pooler_output'])
 
 		"""
 			TODO:

@@ -15,3 +15,12 @@ class TestModelEmbeddingsTransformers(unittest.TestCase):
 
 		assert len(self.train_texts) == len(embs), \
 			'Number of input does not equal to number of outputs'
+
+	def test_unsupport_model(self):
+		embeddings = Transformers(model_name_or_path='distilbert-base-uncased',
+			batch_size=3, padding=True, return_tensors='pt')
+
+		with self.assertRaises(Exception) as error:
+			embs = embeddings.convert(self.train_texts)
+		assert 'does not provide single embeddings for input' in str(error.exception), \
+			'Unable to handle unsupported embeddings model'
