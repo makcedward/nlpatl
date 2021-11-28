@@ -1,4 +1,3 @@
-from __future__ import annotations
 import numpy as np
 from collections import defaultdict
 from sklearn.linear_model import (
@@ -7,6 +6,10 @@ from sklearn.linear_model import (
 from sklearn.svm import (
 	SVC,
 	LinearSVC
+)
+from sklearn.ensemble import (
+	RandomForestClassifier,
+
 )
 try:
 	from xgboost import XGBClassifier
@@ -20,7 +23,8 @@ from nlpatl.storage.storage import Storage
 MODEL_FOR_SKLEARN_CLASSIFICATION_MAPPING_NAMES = {
     'logistic_regression': LogisticRegression,
     'svc': SVC,
-    'linear_svc': LinearSVC
+    'linear_svc': LinearSVC,
+    'random_forest': RandomForestClassifier
 }
 try:
 	MODEL_FOR_SKLEARN_CLASSIFICATION_MAPPING_NAMES['xgboost'] = XGBClassifier
@@ -50,17 +54,10 @@ class SkLearnClassification(Classification):
 	def get_mapping() -> dict:
 		return MODEL_FOR_SKLEARN_CLASSIFICATION_MAPPING_NAMES
 
-	def build_label_encoder(self, labels: List[str, int]):
-		uni_labels = sorted(set(labels))
-
-		self.label_encoder = {c:i for i, c in enumerate(uni_labels)}
-		self.label_decoder = {i:c for c, i in self.label_encoder.items()}
-
-	def train(self, x: np.array, y: [np.array, List[str]]) -> SkLearn:
+	def train(self, x: np.array, y: [np.array, List[str]]):
 		self.build_label_encoder(y)
 		y_encoded = [self.label_encoder[lab] for lab in y]
 		self.model.fit(x, y_encoded)
-		return self
 
 	def predict_proba(self, x, predict_config: dict={}) -> np.array:
 		probs = self.model.predict_proba(x, **predict_config)

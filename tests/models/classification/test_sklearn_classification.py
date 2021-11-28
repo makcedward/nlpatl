@@ -46,6 +46,10 @@ class TestModelClassificationSkLearn(unittest.TestCase):
 		assert type(classification.model) is sklearn.svm._classes.LinearSVC, \
 			'Unable to initialize Linear SVM'
 
+		classification = SkLearnClassification('random_forest')
+		assert type(classification.model) is sklearn.ensemble._forest.RandomForestClassifier, \
+			'Unable to initialize Random Forest Classifier'
+
 		model_config = {}
 		classification = SkLearnClassification('xgboost', 
 			model_config=model_config)
