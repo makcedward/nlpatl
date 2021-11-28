@@ -1,7 +1,3 @@
-from scipy.stats import entropy
-import numpy as np
-
-
 class Classification:
 	def __init__(self, name='classification'):
 		self.name = name
@@ -13,6 +9,8 @@ class Classification:
 	def predict_proba(self, x):
 		...
 
-	def entropy(self, probs):
-		return entropy(probs, axis=1)
+	def build_label_encoder(self, labels: List[str, int]):
+		uni_labels = sorted(set(labels))
 
+		self.label_encoder = {c:i for i, c in enumerate(uni_labels)}
+		self.label_decoder = {i:c for c, i in self.label_encoder.items()}
