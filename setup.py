@@ -1,5 +1,6 @@
 from setuptools import setup, find_packages
 import sys
+import re
 
 if sys.version_info < (3,):
     sys.exit("Sorry, Python3 is required.")
@@ -11,7 +12,7 @@ with open("README.md", encoding="utf8") as f:
 #     install_reqs = f.read().splitlines()
 
 # Dependencies
-_dep = [
+_deps = [
     'scipy>=1.7.0',
     'numpy>=1.16.2',
     'transformers>=4.11.3',
