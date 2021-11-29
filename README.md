@@ -9,9 +9,10 @@ At the beginning, you have unlabeled (and limited labeled data) only. NLPatl app
 
 # Quick tour
 
+You may visit this [notebook](https://colab.research.google.com/drive/1dr1GY_vO_oOMixj4clzcMR7jLsNpbbvg#scrollTo=CRxkM-D76s19) for full version of tours.
+
 For no any labeled data, you can try the following sample code:
 ```
-from datasets import load_dataset
 from nlpatl.models import ClusteringSamlping
 
 # Get raw data
