@@ -33,12 +33,14 @@ class TestModelClusteringSkLearn(unittest.TestCase):
 	def test_cluster(self):
 		clustering = SkLearnClustering()
 		clustering.train(self.train_features)
-		results = clustering.predict_prob(self.train_features)
+		result = clustering.predict_prob(self.train_features)
 
 		num_actual_class = clustering.model.n_clusters
-		num_expected_class = len(results)
+		num_expected_class = len(set(result.groups))
 
 		assert num_actual_class == num_expected_class, \
 			'{} expected clusters is different from {} actual clusters'.format(
 				num_actual_class, num_expected_class)
-		
+		assert result.groups, 'Missed groups attribute'
+		assert result.values is not None, 'Missed values attribute'
+		assert result.indices is not None, 'Missed indices attribute'

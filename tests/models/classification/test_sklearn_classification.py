@@ -59,12 +59,14 @@ class TestModelClassificationSkLearn(unittest.TestCase):
 	def test_classify(self):
 		classification = SkLearnClassification('logistic_regression')
 		classification.train(self.train_features, self.train_labels)
-		results = classification.predict_proba(self.train_features)
+		result = classification.predict_proba(self.train_features)
 
 		num_actual_class = len(classification.model.classes_)
-		num_expected_class = len(results)
+		num_expected_class = len(set(result.groups))
 
 		assert num_actual_class == num_expected_class, \
 			'{} expected classes is different from {} actual classes'.format(
 				num_actual_class, num_expected_class)
-		
+		assert result.groups, 'Missed groups attribute'
+		assert result.values is not None, 'Missed values attribute'
+		assert result.indices is not None, 'Missed indices attribute'

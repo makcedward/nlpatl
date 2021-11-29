@@ -27,7 +27,7 @@ class SkLearnClustering(Clustering):
 				**model_config)
 		else:
 			raise ValueError('`{}` does not support. Supporting {} only'.format(
-				model_name, '`' + '`'.join(
+				model_name, '`' + '`,`'.join(
 					MODEL_FOR_SKLEARN_CLUSTERING_MAPPING_NAMES.keys()) + '`'))
 
 	@staticmethod
@@ -38,19 +38,25 @@ class SkLearnClustering(Clustering):
 		self.model.fit(inputs)
 
 	def predict_prob(self, inputs: List[float], 
-		predict_config: dict={}) -> List[Storage]:
+		predict_config: dict={}) -> Storage:
 
 		num_cluster = self.model.n_clusters
 
 		clust_dists = self.model.transform(inputs)
 		preds = self.model.predict(inputs, **predict_config)
 
-		results = defaultdict(Storage)
+		# TODO: Tuning me. Allocating `to_be_filter_indices` size first
+		indices = []
+		values = []
+		groups = []
 		for label in range(self.model.n_clusters):
-			indices = np.where(preds == label)[0]
+			label_indices = np.where(preds == label)[0]
 
-			results[label] = Storage(
-				indices=indices, group=label, 
-				values=clust_dists[indices][:, label])
+			indices.append(label_indices)
+			values.append(clust_dists[label_indices][:, label])
+			groups.extend([label] * len(label_indices))
 
-		return results
+		return Storage(
+			indices=np.concatenate(indices),
+			values=np.concatenate(values),
+			groups=groups)

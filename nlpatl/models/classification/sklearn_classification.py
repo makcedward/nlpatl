@@ -1,4 +1,4 @@
-import numpy as np
+from typing import List
 from collections import defaultdict
 from sklearn.linear_model import (
 	LogisticRegression
@@ -8,29 +8,29 @@ from sklearn.svm import (
 	LinearSVC
 )
 from sklearn.ensemble import (
-	RandomForestClassifier,
-
+	RandomForestClassifier
 )
 try:
 	from xgboost import XGBClassifier
 except ImportError:
-    # No installation required if not using this function
-    pass
+	# No installation required if not using this function
+	pass
+import numpy as np
 
 from nlpatl.models.classification.classification import Classification
 from nlpatl.storage.storage import Storage
 
 MODEL_FOR_SKLEARN_CLASSIFICATION_MAPPING_NAMES = {
-    'logistic_regression': LogisticRegression,
-    'svc': SVC,
-    'linear_svc': LinearSVC,
-    'random_forest': RandomForestClassifier
+	'logistic_regression': LogisticRegression,
+	'svc': SVC,
+	'linear_svc': LinearSVC,
+	'random_forest': RandomForestClassifier
 }
 try:
 	MODEL_FOR_SKLEARN_CLASSIFICATION_MAPPING_NAMES['xgboost'] = XGBClassifier
 except NameError:
 	# No installation required if not using this class
-    pass	
+	pass
 
 
 class SkLearnClassification(Classification):
@@ -63,12 +63,6 @@ class SkLearnClassification(Classification):
 		probs = self.model.predict_proba(x, **predict_config)
 		preds = np.argmax(probs, axis=1)
 
-		results = defaultdict(Storage)
-		for label in sorted(self.model.classes_):
-			indices = np.where(preds == label)[0]
-
-			results[label] = Storage(
-				indices=indices, group=label,
-				values=probs[indices])
-
-		return results
+		return Storage(
+			values=probs,
+			groups=preds.tolist())

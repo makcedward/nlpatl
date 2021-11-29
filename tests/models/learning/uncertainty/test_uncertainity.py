@@ -2,10 +2,10 @@ import unittest
 import datasets
 from datasets import load_dataset
 
-from nlpatl.models.learning.uncertainty.entropy import EntropySampling
+from nlpatl.models import EntropySampling
 
 
-class TestModelLearningUncertaintySamlping(unittest.TestCase):
+class TestModelLearningUncertaintySampling(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
 		texts = load_dataset('ag_news')['train']['text']
@@ -13,12 +13,13 @@ class TestModelLearningUncertaintySamlping(unittest.TestCase):
 		cls.train_texts = texts[0:5] + texts[200:205] + texts[1000:1005]
 		cls.train_labels = labels[0:5] + labels[200:205] + labels[1000:1005]
 		cls.test_texts = texts[0:10] + texts[200:210]
+		cls.test_labels = labels[0:10] + labels[200:210]
 
 	def test_no_model(self):
 		learning = EntropySampling()
 
 		with self.assertRaises(Exception) as error:
-			learning.query(self.train_texts, self.train_labels, self.test_texts)
+			learning.explore(self.train_texts, self.train_labels, self.test_texts)
 		assert 'Embeddings model does not initialize yet' in str(error.exception), \
 			'Does not initialize embeddings model but still able to run'
 
@@ -26,11 +27,11 @@ class TestModelLearningUncertaintySamlping(unittest.TestCase):
 			'distilbert-base-uncased', return_tensors='pt', padding=True, 
 			batch_size=3)
 		with self.assertRaises(Exception) as error:
-			learning.query(self.train_texts, self.train_labels, self.test_texts)
+			learning.explore(self.train_texts, self.train_labels, self.test_texts)
 		assert 'Classification model does not initialize yet' in str(error.exception), \
 			'Does not initialize classification model but still able to run'
 
-	def test_genearte_by_sklearn(self):
+	def test_explore_by_sklearn(self):
 		learning = EntropySampling()
 
 		learning.init_embeddings_model(
@@ -40,10 +41,11 @@ class TestModelLearningUncertaintySamlping(unittest.TestCase):
 		learning.init_classification_model('logistic_regression',
 			model_config=model_config)
 	
-		outputs = learning.query(self.train_texts, self.train_labels, self.test_texts)
-		assert outputs, 'No output'
+		learning.learn(self.train_texts, self.train_labels)
+		result = learning.explore(self.test_texts)
+		assert result, 'No output'
 
-	def test_genearte_by_xgboost(self):
+	def test_explore_by_xgboost(self):
 		learning = EntropySampling()
 
 		learning.init_embeddings_model(
@@ -56,5 +58,7 @@ class TestModelLearningUncertaintySamlping(unittest.TestCase):
 		}
 		learning.init_classification_model('xgboost', model_config=model_config)
 	
-		outputs = learning.query(self.train_texts, self.train_labels, self.test_texts)
-		assert outputs, 'No output'
+		learning.learn(self.train_texts, self.train_labels)
+		result = learning.explore(self.test_texts)
+		assert result, 'No output'
+		assert result['features'], 'Missed features attribute'
