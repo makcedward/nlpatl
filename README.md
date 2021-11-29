@@ -4,7 +4,7 @@ This python library helps you to perform Active Learning in NLP. NLPatl built on
 
 The goal of NLPatl is to make use of the state-of-the-art (SOTA) NLP models to estimate the most valueable data and making use of subject matter experts (SMEs) by having them to label limited amount data. 
 
-<br><p align="center"><img src="https://github.com/makcedward/nlpatl/blob/master/res/architecture.png"/></p>
+<br><p align="center"><img src="https://github.com/makcedward/nlpatl/blob/master/res/architecture.svg"/></p>
 At the beginning, you have unlabeled (and limited labeled data) only. NLPatl apply transfer learning to convert your texts into vectors (or embeddings). After that, vectors go through unsupervised learning or supervised learning to estimate the most uncertainty (or valuable) data. SMEs perform label on it and feedback to models until accumulated enough high quailty data.
 
 # Quick tour
@@ -47,7 +47,7 @@ train_labels = labels[0:5] + labels[200:205] + labels[1000:1005]
 test_texts = texts[0:10] + texts[200:210]
 
 # Initialize entropy sampling apporach to estimate the most valuable data for labeling
-learning = EntropySamlping()
+learning = EntropySampling()
 learning.init_embeddings_model(
     'bert-base-uncased', return_tensors='pt', padding=True,
     batch_size=8)
