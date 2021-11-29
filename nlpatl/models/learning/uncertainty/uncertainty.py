@@ -1,5 +1,6 @@
 from typing import List
 from collections import defaultdict
+import numpy as np
 
 from nlpatl.models.learning.learning import Learning
 from nlpatl.storage.storage import Storage
@@ -12,30 +13,36 @@ class UncertaintySampling(Learning):
 	def validate(self):
 		super().validate(['embeddings', 'classification'])
 
-	def train(self, x: List[str], y: List[int]):
-		self.classification_model.train(x, y)
+	def learn(self, x: [List[str], List[int], List[float], np.ndarray], 
+		y: [List[str], List[int]], include_leart_data: bool = True):
+		
+		self.validate()
 
-	def keep_most_representative(self, data: Storage, num_sample: int) -> List[Storage]:
-		...
+		if include_leart_data and self.learn_x is not None:
+			if type(x) is np.ndarray and type(self.learn_x) is ndarray:
+				x_features = self.embeddings_model.convert(
+					np.concatenate((x, self.learn_x)))
+			else:
+				x_features = self.embeddings_model.convert(
+					x+self.learn_x)
 
-	def query(self, train_inputs: List[str], train_labels: List[int], 
-		test_inputs: List[str], return_type: str = 'dict', 
-		num_sample: int = 2) -> List[object]:
+			# TODO: support multi-label
+			y += self.learn_y
+		else:
+			x_features = self.embeddings_model.convert(x)
+
+		self.classification_model.train(x_features, y)
+
+	def explore(self, x: List[str], return_type: str = 'dict', 
+		num_sample: int = 10) -> List[object]:
 
 		self.validate()
 
-		train_features = self.embeddings_model.convert(train_inputs)
-		self.train(train_features, train_labels)
+		x_features = self.embeddings_model.convert(x)
+		preds = self.classification_model.predict_proba(x_features)
 
-		test_features = self.embeddings_model.convert(test_inputs)
-		preds = self.classification_model.predict_proba(test_features)
+		preds = self.keep_most_valuable(preds, num_sample=num_sample)
 
-		results = defaultdict(list)
-		for label, pred in preds.items():
-			result = self.keep_most_representative(
-				pred, num_sample=num_sample)
-			result.features = self.filter(test_inputs, result.indices)
+		preds.features = [x[i] for i in preds.indices.tolist()]
 
-			results[label] = self.get_return_object(result, return_type)
-			
-		return results
+		return self.get_return_object(preds, return_type)

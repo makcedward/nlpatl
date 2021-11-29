@@ -21,8 +21,8 @@ class Learning:
 		self.name = name
 		self.train_x = x
 		self.train_y = y
-		self.test_x = None
-		self.test_y = None
+		self.learn_x = None
+		self.learn_y = None
 		self.embeddings_model = None
 		self.clustering_model = None
 		self.classification_model = None
@@ -106,12 +106,68 @@ class Learning:
 		else:
 			return [data[i] for i in indices.tolist()]
 
+	def get_learnt_data(self):
+		return self.learn_x, self.learn_y
+
+	def get_unique_labels(self):
+		labels = np.unique(np.concatenate([
+			self.train_y if self.train_y else [], 
+			self.learn_y if self.learn_y else [], 
+		]))
+		return set(labels.tolist())
+
 	def train(self, x: object, y: object):
 		...
 
-	def keep_most_representative(self, data: Storage, num_sample: int) -> Storage: 
+	def keep_most_valuable(self, data: Storage, num_sample: int) -> Storage: 
 		...
 
-	def query(self, inputs: List[str], return_type: str = 'dict', 
+	def learn(self, x: [List[str], List[int], List[float], np.ndarray], 
+		y: [List[str], List[int]], include_leart_data: bool = True):
+		...
+
+	def explore(self, x: List[str], return_type: str = 'dict', 
 		num_sample: int = 2) -> List[object]:
 		...
+
+	def explore_educate_in_notebook(self, 
+		x: [List[str], List[int], List[float], np.ndarray],
+		num_sample: int = 2):
+		
+		result = self.explore(x, num_sample=num_sample, return_type='object')
+
+		possible_labels = self.get_unique_labels()
+		for i, feature in enumerate(result.features):
+			label = input('{}/{}:{}\n\nExisting Label:{}\n'.format(
+				i+1, len(result.features), feature, possible_labels if possible_labels else []))
+			self.educate(feature, label)
+			possible_labels.add(label)
+
+
+	def educate(self, x: [str, int, float, List[float], np.ndarray],
+		y: [str, int, List[str], List[int]]):
+		"""
+			Expect label 1 record only. 
+			x: List of floar or np.ndarray used for vector
+			y: List is designed for multi-label scenario
+		"""
+
+		if type(x) in [str, int, float, list]:
+			if self.learn_x:
+				self.learn_x.append(x)
+			else:
+				self.learn_x = [x]
+		elif type(x) is np.ndarray:
+			if self.learn_x:
+				self.learn_x = np.hstack((self.learn_x, x))
+			else:
+				self.learn_x = np.array(x)
+		else:
+			assert False, '{} data type does not support in `x` yet. '\
+				'Only support `{}`'.format(type(x), '`,`'.join(
+					['str', 'int', 'float', 'list', 'np.ndarray']))
+
+		if self.learn_y:
+			self.learn_y.append(y)
+		else:
+			self.learn_y = [y]
