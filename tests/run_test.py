@@ -43,6 +43,8 @@ if __name__ == '__main__':
 
     # Labeling
     # suites.append(unittest.TestLoader().loadTestsFromName('models.learning.test_learning'))
+    # suites.append(unittest.TestLoader().loadTestsFromName('models.learning.test_supervised_learning'))
+    # suites.append(unittest.TestLoader().loadTestsFromName('models.learning.test_unsupervised_learning'))
 
     # suites.append(unittest.TestLoader().loadTestsFromName('models.learning.unsupervised.test_clustering'))
     

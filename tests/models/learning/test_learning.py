@@ -1,14 +1,18 @@
+from datasets import load_dataset
 import unittest
 import datasets
-from datasets import load_dataset
+import numpy as np
+
+from nlpatl.models.learning.supervised_learning import SupervisedLearning
+from nlpatl.storage.storage import Storage
 
 from nlpatl.models import (
-	ClusteringSamlping,
-	EntropySampling
+	ClusteringLearning,
+	EntropyLearning
 )
 
 
-class TestModelLearningClusteringSamlping(unittest.TestCase):
+class TestModelLearning(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
 		texts = load_dataset('ag_news')['train']['text']
@@ -19,7 +23,7 @@ class TestModelLearningClusteringSamlping(unittest.TestCase):
 		cls.test_labels = labels[0:10] + labels[200:210]
 
 	def test_unsupervised_explore(self):
-		learning = ClusteringSamlping()
+		learning = ClusteringLearning()
 		learning.init_embeddings_model(
 			'bert-base-uncased', return_tensors='pt', padding=True, 
 			batch_size=3)
@@ -36,7 +40,7 @@ class TestModelLearningClusteringSamlping(unittest.TestCase):
 		assert learning.learn_x, 'Unable to explore'
 
 	def test_uncertainty_educate(self):
-		learning = EntropySampling()
+		learning = EntropyLearning()
 		learning.init_embeddings_model(
 			'bert-base-uncased', return_tensors='pt', padding=True, 
 			batch_size=3)
@@ -65,7 +69,7 @@ class TestModelLearningClusteringSamlping(unittest.TestCase):
 			assert f not in first_result['features'], 'Low quality of learnt data'
 
 	def test_return_type(self):
-		learning = ClusteringSamlping()
+		learning = ClusteringLearning()
 		learning.init_embeddings_model(
 			'bert-base-uncased', return_tensors='pt', padding=True, 
 			batch_size=3)
@@ -76,7 +80,7 @@ class TestModelLearningClusteringSamlping(unittest.TestCase):
 
 		assert result.features, 'Not object format'
 
-		learning = EntropySampling()
+		learning = EntropyLearning()
 		learning.init_embeddings_model(
 			'bert-base-uncased', return_tensors='pt', padding=True, 
 			batch_size=3)
@@ -89,3 +93,18 @@ class TestModelLearningClusteringSamlping(unittest.TestCase):
 			return_type='object')
 
 		assert result.features, 'Not object format'
+
+	def test_educate_multi_label(self):
+		learning = ClusteringLearning(multi_label=True)
+
+		expected_labels = [
+			['1'],
+			['1', '2'],
+			['3', '4']
+		]
+
+		for i in range(3):
+			learning.educate(self.train_texts[i], expected_labels[i])
+
+		learn_x, learn_y = learning.get_learnt_data()
+		assert expected_labels == learn_y, 'Unable to learn multi label'

@@ -2,7 +2,7 @@ from typing import List
 
 
 class Embeddings:
-	def __init__(self, name: str):
+	def __init__(self, name: str = 'embeddings'):
 		self.name = name
 
 	def convert(self, inputs: List[str]) -> List[float]:

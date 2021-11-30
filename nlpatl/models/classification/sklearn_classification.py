@@ -54,12 +54,14 @@ class SkLearnClassification(Classification):
 	def get_mapping() -> dict:
 		return MODEL_FOR_SKLEARN_CLASSIFICATION_MAPPING_NAMES
 
-	def train(self, x: np.array, y: [np.array, List[str]]):
+	def train(self, x: np.array, 
+		y: [np.array, List[str], List[int], List[List[str]], List[List[int]]]):
+
 		self.build_label_encoder(y)
 		y_encoded = [self.label_encoder[lab] for lab in y]
 		self.model.fit(x, y_encoded)
 
-	def predict_proba(self, x, predict_config: dict={}) -> np.array:
+	def predict_proba(self, x, predict_config: dict={}) -> Storage:
 		probs = self.model.predict_proba(x, **predict_config)
 		preds = np.argmax(probs, axis=1)
 

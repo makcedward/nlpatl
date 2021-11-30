@@ -1,19 +1,26 @@
 from typing import List
+import numpy as np
 
+from nlpatl.storage.storage import Storage
 
 class Classification:
-	def __init__(self, name='classification'):
+	def __init__(self, name: str = 'classification'):
 		self.name = name
-
-	@staticmethod
-	def get_mapping(self) -> dict:
-		...
-
-	def predict_proba(self, x):
-		...
 
 	def build_label_encoder(self, labels: [List[str], List[int]]):
 		uni_labels = sorted(set(labels))
 
 		self.label_encoder = {c:i for i, c in enumerate(uni_labels)}
 		self.label_decoder = {i:c for c, i in self.label_encoder.items()}
+
+	@staticmethod
+	def get_mapping(self) -> dict:
+		...
+
+	def train(self, x: np.array, 
+		y: [np.array, List[str], List[int], List[List[str]], List[List[int]]]):
+		...
+
+	def predict_proba(self, x, predict_config: dict={}) -> Storage:
+		...
+	

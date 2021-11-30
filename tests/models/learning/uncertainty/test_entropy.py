@@ -2,10 +2,10 @@ import unittest
 import datasets
 from datasets import load_dataset
 
-from nlpatl.models import EntropySampling
+from nlpatl.models import EntropyLearning
 
 
-class TestModelLearningEntropySampling(unittest.TestCase):
+class TestModelLearningEntropy(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
 		texts = load_dataset('ag_news')['train']['text']
@@ -15,8 +15,8 @@ class TestModelLearningEntropySampling(unittest.TestCase):
 		cls.test_texts = texts[0:10] + texts[200:210]
 		cls.test_labels = labels[0:10] + labels[200:210]
 
-	def test_sampling(self):
-		learning = EntropySampling()
+	def test_learning(self):
+		learning = EntropyLearning()
 
 		learning.init_embeddings_model(
 			'bert-base-uncased', return_tensors='pt', padding=True, 

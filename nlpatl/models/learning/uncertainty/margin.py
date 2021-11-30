@@ -1,13 +1,22 @@
 from typing import List
 import numpy as np
 
-from nlpatl.models.learning.uncertainty.uncertainty import UncertaintySampling
+from nlpatl.models.classification.classification import Classification
+from nlpatl.models.embeddings.embeddings import Embeddings
+from nlpatl.models.learning.supervised_learning import SupervisedLearning
 from nlpatl.storage.storage import Storage
 
 
-class MarginSampling(UncertaintySampling):
-	def __init__(self, name: str = 'margin_sampling'):
-		super().__init__(name=name)		
+class MarginLearning(SupervisedLearning):
+	def __init__(self, multi_label: bool = False, 
+		embeddings_model: Embeddings = None, 
+		classification_model: Classification = None, 
+		name: str = 'margin_sampling'):
+	
+		super().__init__(multi_label=multi_label, 
+			embeddings_model=embeddings_model,
+			classification_model=classification_model,
+			name=name)		
 
 	def keep_most_valuable(self, data: Storage, 
 		num_sample: int) -> Storage:

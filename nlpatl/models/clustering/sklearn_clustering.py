@@ -37,26 +37,27 @@ class SkLearnClustering(Clustering):
 	def train(self, inputs: List[float]):
 		self.model.fit(inputs)
 
-	def predict_prob(self, inputs: List[float], 
+	def predict_proba(self, inputs: List[float], 
 		predict_config: dict={}) -> Storage:
 
 		num_cluster = self.model.n_clusters
 
 		clust_dists = self.model.transform(inputs)
 		preds = self.model.predict(inputs, **predict_config)
+		total_record = len(preds)
 
-		# TODO: Tuning me. Allocating `to_be_filter_indices` size first
-		indices = []
-		values = []
-		groups = []
+		indices = np.zeros(total_record, dtype=int)
+		values = np.zeros(total_record, dtype=np.float)
+		groups = [-1] * total_record
+		start_pos = 0
 		for label in range(self.model.n_clusters):
 			label_indices = np.where(preds == label)[0]
+			end_pos = start_pos + len(label_indices)
 
-			indices.append(label_indices)
-			values.append(clust_dists[label_indices][:, label])
-			groups.extend([label] * len(label_indices))
+			indices[start_pos:end_pos] = label_indices
+			values[start_pos:end_pos] = clust_dists[label_indices][:, label]
+			groups[start_pos:end_pos] = [label] * len(label_indices)
+			
+			start_pos = end_pos
 
-		return Storage(
-			indices=np.concatenate(indices),
-			values=np.concatenate(values),
-			groups=groups)
+		return Storage(indices=indices, values=values, groups=groups)

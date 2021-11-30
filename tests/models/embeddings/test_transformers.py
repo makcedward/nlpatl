@@ -9,12 +9,13 @@ class TestModelEmbeddingsTransformers(unittest.TestCase):
 		cls.train_texts = ['The quick brown fox jumps of the lazy dog.'] * 5
 
 	def test_convert(self):
-		embeddings = Transformers(model_name_or_path='bert-base-uncased',
-			batch_size=3, padding=True, return_tensors='pt')
-		embs = embeddings.convert(self.train_texts)
+		for return_tensor in ['pt', 'tf']:
+			embeddings = Transformers(model_name_or_path='bert-base-uncased',
+				batch_size=3, padding=True, return_tensors=return_tensor)
+			embs = embeddings.convert(self.train_texts)
 
-		assert len(self.train_texts) == len(embs), \
-			'Number of input does not equal to number of outputs'
+			assert len(self.train_texts) == len(embs), \
+				'Number of input does not equal to number of outputs'
 
 	def test_unsupport_model(self):
 		embeddings = Transformers(model_name_or_path='distilbert-base-uncased',

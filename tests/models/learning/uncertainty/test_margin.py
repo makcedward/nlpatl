@@ -2,10 +2,10 @@ import unittest
 import datasets
 from datasets import load_dataset
 
-from nlpatl.models import MarginSampling
+from nlpatl.models import MarginLearning
 
 
-class TestModelLearningMarginSampling(unittest.TestCase):
+class TestModelLearningMargin(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
 		texts = load_dataset('ag_news')['train']['text']
@@ -15,8 +15,8 @@ class TestModelLearningMarginSampling(unittest.TestCase):
 		cls.test_texts = texts[0:10] + texts[200:210]
 		cls.test_labels = labels[0:10] + labels[200:210]
 
-	def test_sampling(self):
-		learning = MarginSampling()
+	def test_learning(self):
+		learning = MarginLearning()
 
 		learning.init_embeddings_model(
 			'bert-base-uncased', return_tensors='pt', padding=True, 

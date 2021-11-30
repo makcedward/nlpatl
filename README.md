@@ -7,12 +7,18 @@ The goal of NLPatl is to make use of the state-of-the-art (SOTA) NLP models to e
 <br><p align="center"><img src="https://github.com/makcedward/nlpatl/blob/master/res/architecture.png"/></p>
 At the beginning, you have unlabeled (and limited labeled data) only. NLPatl apply transfer learning to convert your texts into vectors (or embeddings). After that, vectors go through unsupervised learning or supervised learning to estimate the most uncertainty (or valuable) data. SMEs perform label on it and feedback to models until accumulated enough high quailty data.
 
+# Installation
+```
+pip install nlpatl
+```
+
 # Quick tour
 
 You may visit this [notebook](https://colab.research.google.com/drive/1dr1GY_vO_oOMixj4clzcMR7jLsNpbbvg#scrollTo=CRxkM-D76s19) for full version of tours.
 
 For no any labeled data, you can try the following sample code:
 ```
+from datasets import load_dataset
 from nlpatl.models import ClusteringSamlping
 
 # Get raw data
@@ -66,6 +72,16 @@ learn_x, learn_y = learning.get_learnt_data()
 print('Features:{}'.format(learn_x))
 print('Label:{}'.format(learn_y))
 ```
+
+# Release
+0.0.2dev
+- [Completed] transformers supports Tensorflow
+- [Completed] performance tuning during clustering
+- [Completed] support multi-label
+- [Completed] Custom scoring function
+- [Completed] Custom embs function
+- [Completed] Custom clustering function
+- [Completed] Custom classification function
 
 # Citation
 

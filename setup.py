@@ -8,9 +8,6 @@ if sys.version_info < (3,):
 with open("README.md", encoding="utf8") as f:
     readme = f.read()
 
-# with open('requirements.txt') as f:
-#     install_reqs = f.read().splitlines()
-
 # Dependencies
 _deps = [
     'scipy>=1.7.0',
@@ -20,6 +17,7 @@ _deps = [
     'xgboost>=1.5.1',
     'datasets>=1.8.0'
 ]
+
 # support both w and w/ version
 deps = {b: a for a, b in (re.findall(r"^(([^!=<>]+)(?:[!=<>].*)?$)", x)[0] for x in _deps)}
 
@@ -30,17 +28,15 @@ install_reqs = deps_list('scipy', 'numpy', 'scikit-learn', 'transformers')
 
 extra_reqs = {}
 extra_reqs['dev'] = deps_list('datasets', 'xgboost')
-extra_reqs['xgboost'] = deps_list('xgboost')
 
 extra_reqs['all'] = (
     install_reqs
     + extra_reqs['dev']
 )
 
-
 setup(
     name="nlpatl",
-    version="0.0.1",
+    version="0.0.2",
     author="Edward Ma",
     author_email="makcedward@gmail.com",
     url="https://github.com/makcedward/nlpatl",

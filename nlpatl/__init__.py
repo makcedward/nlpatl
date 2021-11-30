@@ -1,4 +1,4 @@
-__version__ = '0.0.1'
+__version__ = '0.0.2dev'
 __description__ = 'Natural language processing active learning library for data-driven AI'
 __url__ = 'https://github.com/makcedward/nlpatl'
 __author__ = 'Edward Ma'
