@@ -1,11 +1,20 @@
 from typing import List
-from transformers import AutoTokenizer, AutoModel
+from transformers import (
+	AutoTokenizer, 
+	AutoModel, TFAutoModel 
+)
+import numpy as np
 
 try:
 	import torch
 except ImportError:
-    # No installation required if not using this function
-    pass
+	# No installation required if not using this function
+	pass
+try:
+	import tensorflow as tf
+except ImportError:
+	# No installation required if not using this function
+	pass
 
 from nlpatl.models.embeddings.embeddings import Embeddings
 
@@ -19,14 +28,17 @@ class Transformers(Embeddings):
 
 		self.model_name_or_path = model_name_or_path
 		self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
-		self.model = AutoModel.from_pretrained(model_name_or_path)
+		if return_tensors == 'pt':
+			self.model = AutoModel.from_pretrained(model_name_or_path)
+		elif return_tensors == 'tf':
+			self.model = TFAutoModel.from_pretrained(model_name_or_path)
 
 		self.batch_size = batch_size
 		self.padding = padding
 		self.truncation = truncation
 		self.return_tensors = return_tensors
 
-	def convert(self, inputs: List[str]) -> List[float]:
+	def convert(self, inputs: List[str]) -> np.ndarray:
 		results = []
 		for batch_inputs in self.batch(inputs, self.batch_size):
 			ids = self.tokenizer(
@@ -44,13 +56,7 @@ class Transformers(Embeddings):
 
 				results.append(output['pooler_output'])
 
-		"""
-			TODO:
-				1. support TF and others
-				2. performance tuning. 
-				3. GPU
-
-		"""
 		if self.return_tensors == 'pt':
 			return torch.cat(results).numpy()
-
+		elif self.return_tensors == 'tf':
+			return tf.concat(results, axis=0).numpy()
