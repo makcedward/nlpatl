@@ -33,7 +33,7 @@ class TestModelClusteringSkLearn(unittest.TestCase):
 	def test_cluster(self):
 		clustering = SkLearnClustering()
 		clustering.train(self.train_features)
-		result = clustering.predict_prob(self.train_features)
+		result = clustering.predict_proba(self.train_features)
 
 		num_actual_class = clustering.model.n_clusters
 		num_expected_class = len(set(result.groups))
