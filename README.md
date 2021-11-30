@@ -11,6 +11,10 @@ At the beginning, you have unlabeled (and limited labeled data) only. NLPatl app
 ```
 pip install nlpatl
 ```
+or
+```
+pip install git+https://github.com/makcedward/nlpatl.git
+```
 
 # Quick tour
 
@@ -19,14 +23,14 @@ You may visit this [notebook](https://colab.research.google.com/drive/1dr1GY_vO_
 For no any labeled data, you can try the following sample code:
 ```
 from datasets import load_dataset
-from nlpatl.models import ClusteringSamlping
+from nlpatl.models import ClusteringLearning
 
 # Get raw data
 texts = load_dataset('ag_news')['train']['text']
 train_texts = texts[0:5] + texts[200:205] + texts[1000:1005]
 
 # Initialize clustering sampling apporach to estimate the most valuable data for labeling
-learning = ClusteringSamlping()
+learning = ClusteringLearning()
 learning.init_embeddings_model(
     'bert-base-uncased', return_tensors='pt', padding=True, 
     batch_size=8)
@@ -44,7 +48,7 @@ print('Label:{}'.format(learn_y))
 For having limited data, you can try the following sample code:
 ```
 from datasets import load_dataset
-from nlpatl.models import EntropySampling
+from nlpatl.models import EntropyLearning
 
 # Get raw data
 texts = load_dataset('ag_news')['train']['text']
@@ -54,7 +58,7 @@ train_labels = labels[0:5] + labels[200:205] + labels[1000:1005]
 test_texts = texts[0:10] + texts[200:210]
 
 # Initialize entropy sampling apporach to estimate the most valuable data for labeling
-learning = EntropySampling()
+learning = EntropyLearning()
 learning.init_embeddings_model(
     'bert-base-uncased', return_tensors='pt', padding=True,
     batch_size=8)
