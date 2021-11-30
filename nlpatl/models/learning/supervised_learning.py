@@ -2,13 +2,23 @@ from typing import List
 from collections import defaultdict
 import numpy as np
 
+from nlpatl.models.classification.classification import Classification
+from nlpatl.models.embeddings.embeddings import Embeddings
 from nlpatl.models.learning.learning import Learning
 from nlpatl.storage.storage import Storage
 
 
-class UncertaintySampling(Learning):
-	def __init__(self, name: str = 'uncertainty_sampling'):
-		super().__init__(name=name)
+class SupervisedLearning(Learning):
+	def __init__(self, x: [List[str], List[float], np.ndarray] = None,
+		y: [List[str], List[int], np.ndarray] = None,
+		multi_label: bool = False, embeddings_model: Embeddings = None, 
+		classification_model: Classification = None, 
+		name: str = 'classification_learning'):
+
+		super().__init__(x=x, y=y, multi_label=multi_label, 
+			embeddings_model=embeddings_model,
+			classification_model=classification_model,
+			name=name)
 
 	def validate(self):
 		super().validate(['embeddings', 'classification'])
@@ -26,7 +36,6 @@ class UncertaintySampling(Learning):
 				x_features = self.embeddings_model.convert(
 					x+self.learn_x)
 
-			# TODO: support multi-label
 			y += self.learn_y
 		else:
 			x_features = self.embeddings_model.convert(x)
