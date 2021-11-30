@@ -15,7 +15,9 @@ _deps = [
     'transformers>=4.11.3',
     'scikit-learn>=1.0.1',
     'xgboost>=1.5.1',
-    'datasets>=1.8.0'
+    'datasets>=1.8.0',
+    'torch>=1.9.0',
+    'tensorflow>=2.7.0'
 ]
 
 # support both w and w/ version
@@ -27,7 +29,7 @@ def deps_list(*pkgs):
 install_reqs = deps_list('scipy', 'numpy', 'scikit-learn', 'transformers')
 
 extra_reqs = {}
-extra_reqs['dev'] = deps_list('datasets', 'xgboost')
+extra_reqs['dev'] = deps_list('datasets', 'xgboost', 'torch', 'tensorflow')
 
 extra_reqs['all'] = (
     install_reqs
