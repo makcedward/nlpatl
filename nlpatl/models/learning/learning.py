@@ -1,6 +1,9 @@
 from typing import List
 import numpy as np
 
+from nlpatl.models.classification.classification import Classification
+from nlpatl.models.clustering.clustering import Clustering
+from nlpatl.models.embeddings.embeddings import Embeddings
 from nlpatl.models.embeddings.transformers import Transformers
 from nlpatl.models.clustering.sklearn_clustering import (
 	SkLearnClustering
@@ -16,41 +19,39 @@ class Learning:
 
 	def __init__(self, x: [List[str], List[float], np.ndarray] = None,
 		y: [List[str], List[int], np.ndarray] = None,
+		multi_label: bool = False, embeddings_model: Embeddings = None, 
+		clustering_model: Clustering = None, 
+		classification_model: Classification = None, 
 		name: str = 'learning'):
 
 		self.name = name
+		self.multi_label = multi_label
 		self.train_x = x
 		self.train_y = y
 		self.learn_x = None
 		self.learn_y = None
-		self.embeddings_model = None
-		self.clustering_model = None
-		self.classification_model = None
+		self.embeddings_model = embeddings_model
+		self.clustering_model = clustering_model
+		self.classification_model = classification_model
 
 	def init_embeddings_model(self, model_name_or_path: str = 'bert-base-uncased',
-		model: object = None, batch_size: int = 32, padding: bool = False, 
-		truncation: bool = False, return_tensors: str = None):
+		batch_size: int = 32, padding: bool = False, truncation: bool = False, 
+		return_tensors: str = None):
 
-		if model:
-			self.embeddings_model = model
-		else:
-			self.embeddings_config = {
-				'model_name_or_path': model_name_or_path,
-				'batch_size': batch_size,
-				'padding': padding,
-				'truncation': truncation,
-				'return_tensors': return_tensors
-			}
-			self.embeddings_model = Transformers(**self.embeddings_config)
+		self.embeddings_config = {
+			'model_name_or_path': model_name_or_path,
+			'batch_size': batch_size,
+			'padding': padding,
+			'truncation': truncation,
+			'return_tensors': return_tensors
+		}
+		self.embeddings_model = Transformers(**self.embeddings_config)
 
-	def init_clustering_model(self, model_name: str = 'kmeans', model: object = None, 
-		model_config: dict = {}):
+	def init_clustering_model(self, model_name: str = 'kmeans', model_config: dict = {}):
 
 		possible_models = SkLearnClustering.get_mapping().keys()
 
-		if model:
-			self.model = model
-		elif model_name in possible_models:
+		if model_name in possible_models:
 			self.clustering_model = SkLearnClustering(model_name, model_config)
 			self.model_config = model_config
 		else:
@@ -58,21 +59,16 @@ class Learning:
 				model_name, '`' + '`'.join(possible_models) + '`'))
 
 	def init_classification_model(self, model_name: str = 'logistic_regression',
-		model: object = None, model_config: dict = {}):
-		# model: object = None, batch_size: int = 32, model_config: dict = {}):
+		model_config: dict = {}):
 
 		possible_models = SkLearnClassification.get_mapping().keys()
 
-		if model:
-			self.model = model
-		elif model_name in possible_models:
+		if model_name in possible_models:
 			self.classification_model = SkLearnClassification(model_name, model_config)
 			self.model_config = model_config
 		else:
 			raise ValueError('`{}` does not support. Supporting {} only'.format(
 				model_name, '`' + '`'.join(possible_models) + '`'))
-		
-		# self.model_config['batch_size'] = batch_size
 
 	def validate(self, targets: List[str] = None):
 		if not targets:
@@ -137,12 +133,28 @@ class Learning:
 		result = self.explore(x, num_sample=num_sample, return_type='object')
 
 		possible_labels = self.get_unique_labels()
-		for i, feature in enumerate(result.features):
+		i = 0
+		while i < len(result.features):
+			feature = result.features[i]
 			label = input('{}/{}:{}\n\nExisting Label:{}\n'.format(
 				i+1, len(result.features), feature, possible_labels if possible_labels else []))
-			self.educate(feature, label)
-			possible_labels.add(label)
 
+			if not (label or label.strip()):
+				# Prompt same record again
+				continue
+
+			if self.multi_label:
+				labels = label.split(',')
+				labels = list(set([label for label in labels if label]))
+
+				self.educate(feature, labels)
+				for label in labels:
+					possible_labels.add(label)
+			else:
+				self.educate(feature, label)
+				possible_labels.add(label)
+			
+			i += 1
 
 	def educate(self, x: [str, int, float, List[float], np.ndarray],
 		y: [str, int, List[str], List[int]]):
