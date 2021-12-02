@@ -34,8 +34,10 @@ class TestModelLearning(unittest.TestCase):
 
 		assert not learning.learn_x, 'Learnt something at the beginning'
 
-		for feature, group in zip(result['features'], result['groups']):
-			learning.educate(feature, group)
+		for index, feature, group in zip(
+			result['indices'], result['features'], result['groups']):
+
+			learning.educate(index, feature, group)
 
 		assert learning.learn_x, 'Unable to explore'
 
@@ -54,8 +56,11 @@ class TestModelLearning(unittest.TestCase):
 		assert not learning.learn_x, 'Learnt something at the beginning'
 
 		test_texts = self.test_texts
-		for feature, group in zip(first_result['features'], first_result['groups']):
-			learning.educate(feature, group)
+		for index, feature, group in zip(
+			first_result['indices'], first_result['features'], 
+			first_result['groups']):
+
+			learning.educate(index, feature, group)
 
 		assert learning.learn_x, 'Unable to explore'
 
@@ -104,7 +109,7 @@ class TestModelLearning(unittest.TestCase):
 		]
 
 		for i in range(3):
-			learning.educate(self.train_texts[i], expected_labels[i])
+			learning.educate(i, self.train_texts[i], expected_labels[i])
 
-		learn_x, learn_y = learning.get_learnt_data()
+		learn_indices, learn_x, learn_y = learning.get_learnt_data()
 		assert expected_labels == learn_y, 'Unable to learn multi label'
