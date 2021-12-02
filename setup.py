@@ -17,6 +17,7 @@ _deps = [
     'xgboost>=1.5.1',
     'datasets>=1.8.0',
     'torch>=1.9.0',
+    'torchvision>=0.10.0',
     'tensorflow>=2.7.0',
     'Pillow>=8.2.0'
 ]
