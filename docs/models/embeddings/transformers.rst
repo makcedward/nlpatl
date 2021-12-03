@@ -1,5 +1,5 @@
-nlpatl.models.embeddings
-===================================
+nlpatl.models.embeddings\.transformers
+=======================================
 
 .. automodule:: models.learning.embeddings.transformers
     :members:

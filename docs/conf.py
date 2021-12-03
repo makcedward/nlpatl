@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# nlpaug documentation build configuration file, created by
+# nlpatl documentation build configuration file, created by
 # sphinx-quickstart on Wed Aug  7 07:37:05 2019.
 #
 # This file is execfile()d with the current directory set to its

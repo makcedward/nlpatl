@@ -1,3 +1,7 @@
+"""
+	sci-kit learn classification wrapper
+"""
+
 from typing import List
 from collections import defaultdict
 from sklearn.linear_model import (
@@ -24,6 +28,15 @@ MODEL_FOR_SKLEARN_CLASSIFICATION_MAPPING_NAMES = {
 
 
 class SkLearnClassification(Classification):
+	"""
+		:param str model_name: sci-kit learn classification model name
+		:param dict model_config: Custom model paramateters
+		:param str name: Name of this classification
+
+		>>> import nlpatl.models.classification as nmc
+		>>> model = nmc.SkLearnClassification()
+    """
+
 	def __init__(self, model_name: str = 'logistic_regression', model_config: dict = {}, 
 		name: str = 'sklearn'):
 
@@ -47,11 +60,25 @@ class SkLearnClassification(Classification):
 	def train(self, x: np.array, 
 		y: [np.array, List[str], List[int], List[List[str]], List[List[int]]]):
 
+		"""
+			:param np.array x: Raw features
+			:param list/np.array y: label
+
+			>>> model.train(x=x, y=y)
+		"""
+
 		self.build_label_encoder(y)
 		y_encoded = [self.label_encoder[lab] for lab in y]
 		self.model.fit(x, y_encoded)
 
-	def predict_proba(self, x, predict_config: dict={}) -> Storage:
+	def predict_proba(self, x: np.array, predict_config: dict={}) -> Storage:
+		"""
+			:param np.array x: Features
+			:param dict predict_config: Custom model prediction paramateters
+
+			>>> model.predict_proba(x=x)
+		"""
+
 		probs = self.model.predict_proba(x, **predict_config)
 		preds = np.argmax(probs, axis=1)
 
