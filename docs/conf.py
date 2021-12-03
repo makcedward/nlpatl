@@ -29,17 +29,7 @@ class Mock(MagicMock):
     @classmethod
     def __getattr__(cls, name):
         return MagicMock()
-    'scipy>=1.7.0',
-    'numpy>=1.16.2',
-    'transformers>=4.11.3',
-    'scikit-learn>=1.0.1',
-    'xgboost>=1.5.1',
-    'datasets>=1.8.0',
-    'torch>=1.9.0',
-    'torchvision>=0.10.0',
-    'torchaudio>=0.10.0',
-    'tensorflow>=2.7.0',
-    'Pillow>=8.2.0'
+
 MOCK_MODULES = [
     'scipy', 'numpy', 'nltk', 
     'datasets', 'Pillow',
