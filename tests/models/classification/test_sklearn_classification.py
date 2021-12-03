@@ -2,7 +2,10 @@ import unittest
 import sklearn
 import xgboost
 
-from nlpatl.models.classification.sklearn_classification import SkLearnClassification
+from nlpatl.models.classification import (
+	SkLearnClassification,
+	XGBoostClassification
+)
 
 
 class TestModelClassificationSkLearn(unittest.TestCase):
@@ -51,7 +54,7 @@ class TestModelClassificationSkLearn(unittest.TestCase):
 			'Unable to initialize Random Forest Classifier'
 
 		model_config = {}
-		classification = SkLearnClassification('xgboost', 
+		classification = XGBoostClassification('xgboost', 
 			model_config=model_config)
 		assert type(classification.model) is xgboost.sklearn.XGBClassifier, \
 			'Unable to initialize XGBoost'

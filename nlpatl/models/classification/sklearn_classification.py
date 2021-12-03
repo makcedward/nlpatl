@@ -10,11 +10,6 @@ from sklearn.svm import (
 from sklearn.ensemble import (
 	RandomForestClassifier
 )
-try:
-	from xgboost import XGBClassifier
-except ImportError:
-	# No installation required if not using this function
-	pass
 import numpy as np
 
 from nlpatl.models.classification.classification import Classification
@@ -26,11 +21,6 @@ MODEL_FOR_SKLEARN_CLASSIFICATION_MAPPING_NAMES = {
 	'linear_svc': LinearSVC,
 	'random_forest': RandomForestClassifier
 }
-try:
-	MODEL_FOR_SKLEARN_CLASSIFICATION_MAPPING_NAMES['xgboost'] = XGBClassifier
-except NameError:
-	# No installation required if not using this class
-	pass
 
 
 class SkLearnClassification(Classification):

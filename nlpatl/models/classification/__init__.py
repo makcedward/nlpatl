@@ -1,2 +1,3 @@
 from nlpatl.models.classification.classification import Classification
 from nlpatl.models.classification.sklearn_classification import SkLearnClassification
+from nlpatl.models.classification.xgboost_classification import XGBoostClassification
