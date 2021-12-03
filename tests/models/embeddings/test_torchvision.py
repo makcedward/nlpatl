@@ -10,13 +10,13 @@ class TestModelEmbeddingsTorchVision(unittest.TestCase):
 	def setUpClass(cls):
 		dataset = load_sample_images()
 		
-		transformation = transforms.Compose([
+		transform = transforms.Compose([
 			transforms.ToPILImage(),
 			transforms.Resize((224, 224)),
 			transforms.ToTensor(),
 			transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
 		])
-		cls.train_images = [transformation(img) for img in dataset.images * 3]
+		cls.train_images = [transform(img) for img in dataset.images * 3]
 
 	def test_convert(self):
 		embeddings = TorchVision(model_name_or_path='vgg16',

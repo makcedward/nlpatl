@@ -20,14 +20,14 @@ from nlpatl.models.embeddings.embeddings import Embeddings
 class TorchVision(Embeddings):
 	def __init__(self, model_name_or_path: str, batch_size: int = 16, 
 		model_config: dict = {'pretrained': True},
-		transformation: torchvision.transforms = None, 
+		transform: torchvision.transforms = None, 
 		name: str = 'torchvision'):
 		
 		super().__init__(batch_size=batch_size, name=name)
 
 		self.model_name_or_path = model_name_or_path
 		self.model_config = model_config
-		self.transformation = transformation
+		self.transform = transform
 
 		if model_name_or_path in MODEL_FOR_TORCH_VISION_MAPPING_NAMES:
 			self.model = MODEL_FOR_TORCH_VISION_MAPPING_NAMES[model_name_or_path](
@@ -47,7 +47,7 @@ class TorchVision(Embeddings):
 		for batch_inputs in self.batch(inputs, self.batch_size):
 			with torch.no_grad():
 				features = [
-				self.transformation(img) if self.transformation else img for img in batch_inputs]
+				self.transform(img) if self.transform else img for img in batch_inputs]
 			results.append(self.model(torch.stack(features)))
 
 		return torch.cat(results).detach().numpy()
