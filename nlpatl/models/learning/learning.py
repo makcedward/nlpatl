@@ -6,6 +6,11 @@ try:
 except ImportError:
 	# No installation required if not using this function
 	pass
+try:
+	import IPython
+except ImportError:
+	# No installation required if not using this function
+	pass
 
 from nlpatl.models.classification.classification import Classification
 from nlpatl.models.clustering.clustering import Clustering
@@ -42,56 +47,6 @@ class Learning:
 		self.embeddings_model = embeddings_model
 		self.clustering_model = clustering_model
 		self.classification_model = classification_model
-
-	# # TODO: revamp embs for image, text and audio
-	# def init_embeddings_model(self, model_name_or_path: str = 'bert-base-uncased',
-	# 	batch_size: int = 16, padding: bool = False, truncation: bool = False, 
-	# 	return_tensors: str = None):
-
-	# 	self.embeddings_config = {
-	# 		'model_name_or_path': model_name_or_path,
-	# 		'batch_size': batch_size,
-	# 		'padding': padding,
-	# 		'truncation': truncation,
-	# 		'return_tensors': return_tensors
-	# 	}
-	# 	self.embeddings_model = Transformers(**self.embeddings_config)
-
-	# def init_image_embeddings_model(self, model_name_or_path: str,
-	# 	transform = None, batch_size: int = 16, 
-	# 	model_config: dict = None):
-
-	# 	self.embeddings_config = {
-	# 		'model_name_or_path': model_name_or_path,
-	# 		'batch_size': batch_size,
-	# 		'transform': transform,
-	# 		'model_config': model_config
-	# 	}
-	# 	self.embeddings_model = TorchVision(**self.embeddings_config)
-
-	def init_clustering_model(self, model_name: str = 'kmeans', 
-		model_config: dict = {}):
-
-		possible_models = SkLearnClustering.get_mapping().keys()
-
-		if model_name in possible_models:
-			self.clustering_model = SkLearnClustering(model_name, model_config)
-			self.model_config = model_config
-		else:
-			raise ValueError('`{}` does not support. Supporting {} only'.format(
-				model_name, '`' + '`'.join(possible_models) + '`'))
-
-	def init_classification_model(self, model_name: str = 'logistic_regression',
-		model_config: dict = {}):
-
-		possible_models = SkLearnClassification.get_mapping().keys()
-
-		if model_name in possible_models:
-			self.classification_model = SkLearnClassification(model_name, model_config)
-			self.model_config = model_config
-		else:
-			raise ValueError('`{}` does not support. Supporting {} only'.format(
-				model_name, '`' + '`'.join(possible_models) + '`'))
 
 	def validate(self, targets: List[str] = None):
 		if not targets:
@@ -208,13 +163,11 @@ class Learning:
 			if data_type == 'text':
 				metadata += feature
 			elif data_type == 'image':
-				# TODO: use IPython to reduce library dependency
-				PIL.Image.fromarray(feature).show()
+				IPython.display.display(PIL.Image.fromarray(feature))
 			# elif data_type == 'audio':
 				# TODO: externalize
 				# import IPython
 				# IPython.display.display()
-
 
 			label = input(metadata)
 			if not (label or label.strip()):
