@@ -18,6 +18,7 @@ _deps = [
     'datasets>=1.8.0',
     'torch>=1.9.0',
     'torchvision>=0.10.0',
+    'torchaudio>=0.10.0',
     'tensorflow>=2.7.0',
     'Pillow>=8.2.0'
 ]
@@ -32,15 +33,7 @@ install_reqs = deps_list('scipy', 'numpy', 'scikit-learn', 'transformers')
 
 extra_reqs = {}
 extra_reqs['image'] = deps_list('Pillow')
-extra_reqs['dev'] = (
-    deps_list('datasets', 'xgboost', 'torch', 'tensorflow')
-    + extra_reqs['image']
-)
-
-extra_reqs['all'] = (
-    install_reqs
-    + extra_reqs['dev']
-)
+extra_reqs['all'] = deps
 
 setup(
     name="nlpatl",
