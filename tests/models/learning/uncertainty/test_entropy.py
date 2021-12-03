@@ -2,6 +2,8 @@ import unittest
 import datasets
 from datasets import load_dataset
 
+from nlpatl.models.embeddings import Transformers
+from nlpatl.models.classification import SkLearnClassification
 from nlpatl.models import EntropyLearning
 
 
@@ -15,15 +17,18 @@ class TestModelLearningEntropy(unittest.TestCase):
 		cls.test_texts = texts[0:10] + texts[200:210]
 		cls.test_labels = labels[0:10] + labels[200:210]
 
-	def test_learning(self):
-		learning = EntropyLearning()
-
-		learning.init_embeddings_model(
+		cls.transformers_embeddings_model = Transformers(
 			'bert-base-uncased', return_tensors='pt', padding=True, 
 			batch_size=3)
-		model_config = {'max_iter': 500}
-		learning.init_classification_model('logistic_regression',
-			model_config=model_config)
+		cls.sklearn_classification_model = SkLearnClassification(
+			'logistic_regression',
+			model_config={'max_iter': 500})
+
+	def test_learning(self):
+		learning = EntropyLearning(
+			embeddings_model=self.transformers_embeddings_model,
+			classification_model=self.sklearn_classification_model
+			)
 	
 		learning.learn(self.train_texts, self.train_labels)
 		result = learning.explore(self.test_texts)

@@ -43,31 +43,31 @@ class Learning:
 		self.clustering_model = clustering_model
 		self.classification_model = classification_model
 
-	# TODO: revamp embs for image, text and audio
-	def init_embeddings_model(self, model_name_or_path: str = 'bert-base-uncased',
-		batch_size: int = 16, padding: bool = False, truncation: bool = False, 
-		return_tensors: str = None):
+	# # TODO: revamp embs for image, text and audio
+	# def init_embeddings_model(self, model_name_or_path: str = 'bert-base-uncased',
+	# 	batch_size: int = 16, padding: bool = False, truncation: bool = False, 
+	# 	return_tensors: str = None):
 
-		self.embeddings_config = {
-			'model_name_or_path': model_name_or_path,
-			'batch_size': batch_size,
-			'padding': padding,
-			'truncation': truncation,
-			'return_tensors': return_tensors
-		}
-		self.embeddings_model = Transformers(**self.embeddings_config)
+	# 	self.embeddings_config = {
+	# 		'model_name_or_path': model_name_or_path,
+	# 		'batch_size': batch_size,
+	# 		'padding': padding,
+	# 		'truncation': truncation,
+	# 		'return_tensors': return_tensors
+	# 	}
+	# 	self.embeddings_model = Transformers(**self.embeddings_config)
 
-	def init_image_embeddings_model(self, model_name_or_path: str = 'vgg16',
-		transformation=None, batch_size: int = 16, 
-		model_config: dict = {'pretrained': True}):
+	# def init_image_embeddings_model(self, model_name_or_path: str,
+	# 	transform = None, batch_size: int = 16, 
+	# 	model_config: dict = None):
 
-		self.embeddings_config = {
-			'model_name_or_path': model_name_or_path,
-			'batch_size': batch_size,
-			'transformation': transformation,
-			'model_config': model_config
-		}
-		self.embeddings_model = TorchVision(**self.embeddings_config)
+	# 	self.embeddings_config = {
+	# 		'model_name_or_path': model_name_or_path,
+	# 		'batch_size': batch_size,
+	# 		'transform': transform,
+	# 		'model_config': model_config
+	# 	}
+	# 	self.embeddings_model = TorchVision(**self.embeddings_config)
 
 	def init_clustering_model(self, model_name: str = 'kmeans', 
 		model_config: dict = {}):
@@ -99,7 +99,8 @@ class Learning:
 
 		if 'embeddings' in targets:
 			assert self.embeddings_model is not None, \
-				'Embeddings model does not initialize yet. Run `init_embeddings_model` first'
+				'Embeddings model does not initialize yet. Run `init_text_embeddings_model`' \
+				'init_image_embeddings_model` or `init_audio_embeddings_model first'
 		if 'clustering' in targets:
 			assert self.clustering_model is not None, \
 				'Clustering model does not initialize yet. Run `init_clusting_model` first'

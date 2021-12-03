@@ -9,10 +9,11 @@ from nlpatl.storage.storage import Storage
 
 
 class SupervisedLearning(Learning):
-	def __init__(self, x: [List[str], List[float], np.ndarray] = None,
+	def __init__(self, embeddings_model: Embeddings,
+		classification_model: Classification,
+		x: [List[str], List[float], np.ndarray] = None,
 		y: [List[str], List[int], np.ndarray] = None,
-		multi_label: bool = False, embeddings_model: Embeddings = None, 
-		classification_model: Classification = None, 
+		multi_label: bool = False, 
 		name: str = 'classification_learning'):
 
 		super().__init__(x=x, y=y, multi_label=multi_label, 
