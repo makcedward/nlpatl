@@ -3,13 +3,14 @@ import unittest
 import datasets
 import numpy as np
 
-from nlpatl.models.learning.supervised_learning import SupervisedLearning
-from nlpatl.storage.storage import Storage
-
+from nlpatl.models.embeddings import Transformers
+from nlpatl.models.clustering import SkLearnClustering
+from nlpatl.models.classification import SkLearnClassification
 from nlpatl.models import (
 	ClusteringLearning,
 	EntropyLearning
 )
+from nlpatl.storage import Storage
 
 
 class TestModelLearning(unittest.TestCase):
@@ -22,40 +23,46 @@ class TestModelLearning(unittest.TestCase):
 		cls.test_texts = texts[0:10] + texts[200:210]
 		cls.test_labels = labels[0:10] + labels[200:210]
 
-	def test_unsupervised_explore(self):
-		learning = ClusteringLearning()
-		learning.init_embeddings_model(
+		cls.transformers_embeddings_model = Transformers(
 			'bert-base-uncased', return_tensors='pt', padding=True, 
 			batch_size=3)
-		learning.init_clustering_model(
-			'kmeans', model_config={})
+		cls.sklearn_clustering_model = SkLearnClustering('kmeans')
+		cls.sklearn_classification_model = SkLearnClassification(
+			'logistic_regression',
+			model_config={'max_iter': 500})
+
+	def test_unsupervised_explore(self):
+		learning = ClusteringLearning(
+			embeddings_model=self.transformers_embeddings_model, 
+			clustering_model=self.sklearn_clustering_model)
 
 		result = learning.explore(self.train_texts)
 
 		assert not learning.learn_x, 'Learnt something at the beginning'
 
-		for feature, group in zip(result['features'], result['groups']):
-			learning.educate(feature, group)
+		for index, feature, group in zip(
+			result['indices'], result['features'], result['groups']):
+
+			learning.educate(index, feature, group)
 
 		assert learning.learn_x, 'Unable to explore'
 
 	def test_uncertainty_educate(self):
-		learning = EntropyLearning()
-		learning.init_embeddings_model(
-			'bert-base-uncased', return_tensors='pt', padding=True, 
-			batch_size=3)
-		model_config = {'max_iter': 500}
-		learning.init_classification_model('logistic_regression',
-			model_config=model_config)
-
+		learning = EntropyLearning(
+			embeddings_model=self.transformers_embeddings_model,
+			classification_model=self.sklearn_classification_model
+			)
 		learning.learn(self.train_texts, self.train_labels)
 		first_result = learning.explore(self.test_texts, num_sample=2)
 
 		assert not learning.learn_x, 'Learnt something at the beginning'
 
 		test_texts = self.test_texts
-		for feature, group in zip(first_result['features'], first_result['groups']):
-			learning.educate(feature, group)
+		for index, feature, group in zip(
+			first_result['indices'], first_result['features'], 
+			first_result['groups']):
+
+			learning.educate(index, feature, group)
 
 		assert learning.learn_x, 'Unable to explore'
 
@@ -69,25 +76,17 @@ class TestModelLearning(unittest.TestCase):
 			assert f not in first_result['features'], 'Low quality of learnt data'
 
 	def test_return_type(self):
-		learning = ClusteringLearning()
-		learning.init_embeddings_model(
-			'bert-base-uncased', return_tensors='pt', padding=True, 
-			batch_size=3)
-		learning.init_clustering_model(
-			'kmeans', model_config={})
-
+		learning = ClusteringLearning(
+			embeddings_model=self.transformers_embeddings_model, 
+			clustering_model=self.sklearn_clustering_model)
 		result = learning.explore(self.train_texts, return_type='object')
 
 		assert result.features, 'Not object format'
 
-		learning = EntropyLearning()
-		learning.init_embeddings_model(
-			'bert-base-uncased', return_tensors='pt', padding=True, 
-			batch_size=3)
-		model_config = {'max_iter': 500}
-		learning.init_classification_model('logistic_regression',
-			model_config=model_config)
-
+		learning = EntropyLearning(
+			embeddings_model=self.transformers_embeddings_model, 
+			classification_model=self.sklearn_classification_model
+			)
 		learning.learn(self.train_texts, self.train_labels)
 		result = learning.explore(self.test_texts, num_sample=2, 
 			return_type='object')
@@ -104,7 +103,7 @@ class TestModelLearning(unittest.TestCase):
 		]
 
 		for i in range(3):
-			learning.educate(self.train_texts[i], expected_labels[i])
+			learning.educate(i, self.train_texts[i], expected_labels[i])
 
-		learn_x, learn_y = learning.get_learnt_data()
+		learn_indices, learn_x, learn_y = learning.get_learnt_data()
 		assert expected_labels == learn_y, 'Unable to learn multi label'

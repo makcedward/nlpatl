@@ -15,7 +15,7 @@ MODEL_FOR_SKLEARN_CLUSTERING_MAPPING_NAMES = {
 
 class SkLearnClustering(Clustering):
 	def __init__(self, model_name: str = 'kmeans', model_config: dict = {}, 
-		name: str = 'kmeans'):
+		name: str = 'sklearn_clustering'):
 
 		super().__init__(name)
 
@@ -34,7 +34,7 @@ class SkLearnClustering(Clustering):
 	def get_mapping() -> dict:
 		return MODEL_FOR_SKLEARN_CLUSTERING_MAPPING_NAMES
 
-	def train(self, inputs: List[float]):
+	def train(self, inputs: [List[float], np.ndarray]):
 		self.model.fit(inputs)
 
 	def predict_proba(self, inputs: List[float], 

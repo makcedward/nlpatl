@@ -1,11 +1,12 @@
 from typing import List
-
+import numpy as np
 
 class Embeddings:
-	def __init__(self, name: str = 'embeddings'):
+	def __init__(self, batch_size: int = 16, name: str = 'embeddings'):
+		self.batch_size = batch_size
 		self.name = name
 
-	def convert(self, inputs: List[str]) -> List[float]:
+	def convert(self, inputs: [List[str], List[np.ndarray]]) -> List[float]:
 		...
 	
 	def batch(self, arr: List, n: int = 1):

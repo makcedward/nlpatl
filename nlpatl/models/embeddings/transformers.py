@@ -20,20 +20,21 @@ from nlpatl.models.embeddings.embeddings import Embeddings
 
 
 class Transformers(Embeddings):
-	def __init__(self, model_name_or_path: str, batch_size: int = 32, 
+	def __init__(self, model_name_or_path: str, batch_size: int = 16, 
 		padding: bool = False, truncation: bool = False, 
 		return_tensors: str = None, name: str = 'transformer'):
 
-		super().__init__(name=name)
+		super().__init__(batch_size=batch_size, name=name)
 
 		self.model_name_or_path = model_name_or_path
 		self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
 		if return_tensors == 'pt':
 			self.model = AutoModel.from_pretrained(model_name_or_path)
+			self.model.eval()
 		elif return_tensors == 'tf':
 			self.model = TFAutoModel.from_pretrained(model_name_or_path)
+			# TODO: have eval ?
 
-		self.batch_size = batch_size
 		self.padding = padding
 		self.truncation = truncation
 		self.return_tensors = return_tensors

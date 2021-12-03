@@ -4,10 +4,10 @@ import unittest
 import datasets
 import numpy as np
 
-from nlpatl.models.embeddings import Embeddings
-from nlpatl.models.clustering.clustering import Clustering
-from nlpatl.models.learning.unsupervised.clustering import ClusteringLearning
-from nlpatl.storage.storage import Storage
+from nlpatl.models.embeddings import Transformers
+from nlpatl.models.clustering import SkLearnClustering
+from nlpatl.models import ClusteringLearning
+from nlpatl.storage import Storage
 
 
 class TestModelLearningClustering(unittest.TestCase):
@@ -15,13 +15,15 @@ class TestModelLearningClustering(unittest.TestCase):
 	def setUpClass(cls):
 		cls.train_texts = load_dataset('ag_news')['train']['text'][:20]
 
-	def test_explore(self):
-		learning = ClusteringLearning()
-		learning.init_embeddings_model(
-			'bert-base-uncased', return_tensors='pt', padding=True,
+		cls.transformers_embeddings_model = Transformers(
+			'bert-base-uncased', return_tensors='pt', padding=True, 
 			batch_size=3)
-		learning.init_clustering_model(
-			'kmeans', model_config={})
+		cls.sklearn_clustering_model = SkLearnClustering('kmeans')
+
+	def test_explore(self):
+		learning = ClusteringLearning(
+			embeddings_model=self.transformers_embeddings_model,
+			clustering_model=self.sklearn_clustering_model)
 
 		result = learning.explore(self.train_texts)
 

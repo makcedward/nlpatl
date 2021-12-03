@@ -4,17 +4,30 @@ import unittest
 import datasets
 import numpy as np
 
-from nlpatl.models.embeddings import Embeddings
-from nlpatl.models.clustering.clustering import Clustering
-from nlpatl.models.learning import UnsupervisedLearning
-from nlpatl.models.learning.unsupervised.clustering import ClusteringLearning
-from nlpatl.storage.storage import Storage
+from nlpatl.models.embeddings import (
+	Embeddings,
+	Transformers
+)
+from nlpatl.models.clustering import (
+	Clustering, 
+	SkLearnClustering
+)
+from nlpatl.models import (
+	UnsupervisedLearning,
+	ClusteringLearning
+)
+from nlpatl.storage import Storage
 
 
 class TestModelLearningUnsupervised(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
 		cls.train_texts = load_dataset('ag_news')['train']['text'][:20]
+
+		cls.transformers_embeddings_model = Transformers(
+			'bert-base-uncased', return_tensors='pt', padding=True, 
+			batch_size=3)
+		cls.sklearn_clustering_model = SkLearnClustering('kmeans')
 
 	def test_no_model(self):
 		learning = UnsupervisedLearning()
@@ -24,9 +37,7 @@ class TestModelLearningUnsupervised(unittest.TestCase):
 		assert 'Embeddings model does not initialize yet' in str(error.exception), \
 			'Does not initialize embeddings model but still able to run'
 
-		learning.init_embeddings_model(
-			'distilbert-base-uncased', return_tensors='pt', padding=True, 
-			batch_size=3)
+		learning.embeddings_model = self.transformers_embeddings_model
 		with self.assertRaises(Exception) as error:
 			learning.explore(self.train_texts)
 		assert 'Clustering model does not initialize yet' in str(error.exception), \
@@ -38,10 +49,9 @@ class TestModelLearningUnsupervised(unittest.TestCase):
 				return np.random.rand(len(inputs), 5)
 
 		learning = ClusteringLearning(multi_label=True, 
-			embeddings_model=CustomEmbeddings())
-		model_config = {'max_iter': 500}
-		learning.init_clustering_model(
-			'kmeans', model_config={})
+			embeddings_model=CustomEmbeddings(),
+			clustering_model=self.sklearn_clustering_model
+			)
 		learning.explore(self.train_texts)
 
 		assert True, 'Unable to apply custom embeddings model'
@@ -73,10 +83,8 @@ class TestModelLearningUnsupervised(unittest.TestCase):
 					groups=groups.tolist())
 
 		learning = ClusteringLearning(multi_label=True, 
+			embeddings_model=self.transformers_embeddings_model,
 			clustering_model=CustomClustering(model=None))
-		learning.init_embeddings_model(
-			'bert-base-uncased', return_tensors='pt', padding=True,
-			batch_size=3)
 		learning.explore(self.train_texts)
 
 		assert True, 'Unable to apply custom clustering model'
