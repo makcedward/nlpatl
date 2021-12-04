@@ -18,12 +18,12 @@ if __name__ == '__main__':
 
     # test sub package
     test_dirs = [
+        'tests/learning/',
+        'tests/learning/unsupervised/',
+        'tests/learning/uncertainty/',
         'tests/models/embeddings/',
         'tests/models/clustering/',
         'tests/models/classification/',
-        'tests/models/learning/',
-        'tests/models/learning/unsupervised/',
-        'tests/models/learning/uncertainty/',
     ]
     for test_dir in test_dirs:
        loader = unittest.TestLoader()
@@ -33,7 +33,9 @@ if __name__ == '__main__':
     # test function
     suites = []
     # Embeddings
+    # suites.append(unittest.TestLoader().loadTestsFromName('models.embeddings.test_sentence_transformers'))
     # suites.append(unittest.TestLoader().loadTestsFromName('models.embeddings.test_transformers'))
+    # suites.append(unittest.TestLoader().loadTestsFromName('models.embeddings.test_torchvision'))
 
     # Clustering
     # suites.append(unittest.TestLoader().loadTestsFromName('models.clustering.test_sklearn_clustering'))
@@ -42,15 +44,14 @@ if __name__ == '__main__':
     # suites.append(unittest.TestLoader().loadTestsFromName('models.classification.test_sklearn_classification'))
 
     # Labeling
-    # suites.append(unittest.TestLoader().loadTestsFromName('models.learning.test_learning'))
-    # suites.append(unittest.TestLoader().loadTestsFromName('models.learning.test_supervised_learning'))
-    # suites.append(unittest.TestLoader().loadTestsFromName('models.learning.test_unsupervised_learning'))
+    # suites.append(unittest.TestLoader().loadTestsFromName('learning.test_learning'))
+    # suites.append(unittest.TestLoader().loadTestsFromName('learning.test_supervised_learning'))
+    # suites.append(unittest.TestLoader().loadTestsFromName('learning.test_unsupervised_learning'))
 
-    # suites.append(unittest.TestLoader().loadTestsFromName('models.learning.unsupervised.test_clustering'))
+    # suites.append(unittest.TestLoader().loadTestsFromName('learning.unsupervised.test_clustering'))
     
-    # suites.append(unittest.TestLoader().loadTestsFromName('models.learning.uncertainty.test_uncertainity'))
-    # suites.append(unittest.TestLoader().loadTestsFromName('models.learning.uncertainty.test_margin'))
-    # suites.append(unittest.TestLoader().loadTestsFromName('models.learning.uncertainty.test_entropy'))
+    # suites.append(unittest.TestLoader().loadTestsFromName('learning.uncertainty.test_margin'))
+    # suites.append(unittest.TestLoader().loadTestsFromName('learning.uncertainty.test_entropy'))
 
     for suite in suites:
         runner.run(suite)

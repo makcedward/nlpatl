@@ -25,7 +25,7 @@ from nlpatl.models.embeddings.embeddings import Embeddings
 
 class Transformers(Embeddings):
 	"""
-		:param str model_name_or_path: transformers model or path name
+		:param str model_name_or_path: Transformers model or path name
 		:param int batch_size: Batch size of data processing. Default is 16
 		:param bool padding: Inputs may not have same size. Set True to pad it.
 			Default is False
@@ -42,7 +42,7 @@ class Transformers(Embeddings):
 
 	def __init__(self, model_name_or_path: str, batch_size: int = 16, 
 		padding: bool = False, truncation: bool = False, 
-		nn_fwk: str = None, name: str = 'transformer'):
+		nn_fwk: str = None, name: str = 'transformers'):
 
 		super().__init__(batch_size=batch_size, name=name)
 
@@ -61,7 +61,9 @@ class Transformers(Embeddings):
 
 	def convert(self, inputs: List[str]) -> np.ndarray:
 		"""
-			:param np.ndarray x: Raw features
+			:param list x: Raw features
+
+			:return np.ndarray: Embeddings
 			
 			>>> model.convert(x=x)
 		"""
@@ -74,6 +76,7 @@ class Transformers(Embeddings):
 				padding=self.padding, 
 				truncation=self.truncation)
 
+			# TODO: for tensorflow?
 			with torch.no_grad():
 				output = self.model(**ids)
 				assert 'pooler_output' in output.keys(), \

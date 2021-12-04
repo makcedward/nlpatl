@@ -56,7 +56,9 @@ class TorchVision(Embeddings):
 
 	def convert(self, x: List[np.ndarray]) -> np.ndarray:
 		"""
-			:param np.ndarray x: Raw features
+			:param list x: Raw features
+
+			:return np.ndarray: Embeddings
 			
 			>>> model.convert(x=x)
 		"""
