@@ -174,7 +174,7 @@ class Learning:
 
 			# Display on notebook
 			if data_type == 'text':
-				metadata += feature
+				metadata += feature + '\n'
 			elif data_type == 'image':
 				IPython.display.display(PIL.Image.fromarray(feature))
 			# elif data_type == 'audio':
