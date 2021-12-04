@@ -7,6 +7,3 @@ Model
     ./classification/classification
     ./clustering/clustering
     ./embeddings/embeddings
-    ./learning/uncertainty/uncertainty
-    ./learning/unsupervised/unsupervised
-

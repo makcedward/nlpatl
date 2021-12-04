@@ -2,7 +2,7 @@ import numpy as np
 
 from nlpatl.models.classification.classification import Classification
 from nlpatl.models.embeddings.embeddings import Embeddings
-from nlpatl.models.learning.supervised_learning import SupervisedLearning
+from nlpatl.learning.supervised_learning import SupervisedLearning
 from nlpatl.storage.storage import Storage
 
 

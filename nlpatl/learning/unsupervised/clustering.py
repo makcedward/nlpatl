@@ -4,7 +4,7 @@ import numpy as np
 
 from nlpatl.models.clustering.clustering import Clustering
 from nlpatl.models.embeddings.embeddings import Embeddings
-from nlpatl.models.learning.unsupervised_learning import UnsupervisedLearning
+from nlpatl.learning.unsupervised_learning import UnsupervisedLearning
 from nlpatl.storage.storage import Storage
 
 

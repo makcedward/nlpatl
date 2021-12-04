@@ -4,7 +4,7 @@ from datasets import load_dataset
 
 from nlpatl.models.embeddings import Transformers
 from nlpatl.models.classification import SkLearnClassification
-from nlpatl.models import MarginLearning
+from nlpatl.learning import MarginLearning
 
 
 class TestModelLearningMargin(unittest.TestCase):

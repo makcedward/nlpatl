@@ -4,7 +4,7 @@ import numpy as np
 
 from nlpatl.models.classification.classification import Classification
 from nlpatl.models.embeddings.embeddings import Embeddings
-from nlpatl.models.learning.learning import Learning
+from nlpatl.learning.learning import Learning
 from nlpatl.storage.storage import Storage
 
 

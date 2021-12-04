@@ -8,6 +8,8 @@ The goal of NLPatl is assisting user to build high quality labeled dataset. It b
    :maxdepth: 3
    :caption: Contents:
 
+   ./learning/uncertainty/uncertainty
+   ./learning/unsupervised/unsupervised
    ./models/model
 
 See :ref:`modindex` for API.

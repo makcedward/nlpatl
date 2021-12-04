@@ -12,7 +12,7 @@ from nlpatl.models.clustering import (
 	Clustering, 
 	SkLearnClustering
 )
-from nlpatl.models import (
+from nlpatl.learning import (
 	UnsupervisedLearning,
 	ClusteringLearning
 )

@@ -6,7 +6,7 @@ import numpy as np
 from nlpatl.models.embeddings import Transformers
 from nlpatl.models.clustering import SkLearnClustering
 from nlpatl.models.classification import SkLearnClassification
-from nlpatl.models import (
+from nlpatl.learning import (
 	ClusteringLearning,
 	EntropyLearning
 )

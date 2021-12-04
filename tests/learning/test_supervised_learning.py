@@ -13,7 +13,7 @@ from nlpatl.models.classification import (
 	SkLearnClassification, 
 	XGBoostClassification
 )
-from nlpatl.models import (
+from nlpatl.learning import (
 	EntropyLearning, 
 	SupervisedLearning
 )
