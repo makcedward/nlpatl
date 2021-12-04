@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 import numpy as np
 
 try:
@@ -73,8 +73,8 @@ class Learning:
 		elif return_type == 'object':
 			return d
 
-	def filter(self, data: [List[str], List[float], np.ndarray], 
-		indices: np.ndarray) -> [List[str], List[float], np.ndarray]:
+	def filter(self, data: Union[List[str], List[float], np.ndarray], 
+		indices: np.ndarray) -> Union[List[str], List[float], np.ndarray]:
 
 		if type(data) is np.ndarray:
 			return data[indices]
@@ -95,6 +95,12 @@ class Learning:
 		...
 
 	def keep_most_valuable(self, data: Storage, num_sample: int) -> Storage: 
+		"""
+			:param Storage x: processed data
+			:param int num_sample: Total number of sample for labeling
+			
+			>>> model.keep_most_valuable(x=x)
+		"""
 		...
 
 	def learn(self, x: [List[str], List[int], List[float], np.ndarray], 
@@ -105,9 +111,9 @@ class Learning:
 		num_sample: int = 2) -> List[object]:
 		...	
 
-	def educate(self, _id: [str, int], 
-		x: [str, int, float, List[float], np.ndarray],
-		y: [str, int, List[str], List[int]]):
+	def educate(self, _id: Union[str, int], 
+		x: Union[str, int, float, List[float], np.ndarray],
+		y: Union[str, int, List[str], List[int]]):
 		"""
 			Expect label 1 record only. 
 			_id: id

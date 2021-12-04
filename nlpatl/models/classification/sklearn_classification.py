@@ -2,7 +2,7 @@
 	sci-kit learn classification wrapper
 """
 
-from typing import List
+from typing import List, Union
 from collections import defaultdict
 from sklearn.linear_model import (
 	LogisticRegression
@@ -33,8 +33,8 @@ class SkLearnClassification(Classification):
 		:param dict model_config: Custom model paramateters
 		:param str name: Name of this classification
 
-		>>> import nlpatl.models.classification as nmc
-		>>> model = nmc.SkLearnClassification()
+		>>> import nlpatl.models.classification as nmcla
+		>>> model = nmcla.SkLearnClassification()
     """
 
 	def __init__(self, model_name: str = 'logistic_regression', model_config: dict = {}, 
@@ -57,11 +57,11 @@ class SkLearnClassification(Classification):
 	def get_mapping() -> dict:
 		return MODEL_FOR_SKLEARN_CLASSIFICATION_MAPPING_NAMES
 
-	def train(self, x: np.array, 
-		y: [np.array, List[str], List[int], List[List[str]], List[List[int]]]):
+	def train(self, x: np.ndarray, 
+		y: Union[np.ndarray, List[str], List[int], List[List[str]], List[List[int]]]):
 
 		"""
-			:param np.array x: Raw features
+			:param np.ndarray x: Raw features
 			:param list/np.array y: label
 
 			>>> model.train(x=x, y=y)
@@ -71,9 +71,9 @@ class SkLearnClassification(Classification):
 		y_encoded = [self.label_encoder[lab] for lab in y]
 		self.model.fit(x, y_encoded)
 
-	def predict_proba(self, x: np.array, predict_config: dict={}) -> Storage:
+	def predict_proba(self, x: np.ndarray, predict_config: dict={}) -> Storage:
 		"""
-			:param np.array x: Features
+			:param np.ndarray x: Features
 			:param dict predict_config: Custom model prediction paramateters
 
 			>>> model.predict_proba(x=x)

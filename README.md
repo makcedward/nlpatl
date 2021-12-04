@@ -29,8 +29,8 @@ pip install git+https://github.com/makcedward/nlpatl.git
 
 # Citation
 ```latex
-@misc{ma2021nlpaug,
-  title={NLP Active Learning},
+@misc{ma2021nlpatl,
+  title={Active Learning for NLP},
   author={Edward Ma},
   howpublished={https://github.com/makcedward/nlpatl},
   year={2021}

@@ -9,6 +9,18 @@ from nlpatl.storage.storage import Storage
 
 
 class ClusteringLearning(UnsupervisedLearning):
+	"""
+		:param bool multi_label: Problem is mulit-label or not. Default is False
+		:param obj embeddings_model: Embeddings models from 
+			nlpatl.models.embeddings
+		:param obj clustering_model: Clustering models from 
+			nlpatl.models.embeddings
+		:param str name: Name of this embeddings
+
+		>>> import nlpatl.models.learning as nml
+		>>> model = nml.ClusteringLearning()
+    """
+    
 	def __init__(self, multi_label: bool = False, 
 		embeddings_model: Embeddings = None, 
 		clustering_model: Clustering = None, 

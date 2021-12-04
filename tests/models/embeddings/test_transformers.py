@@ -9,9 +9,9 @@ class TestModelEmbeddingsTransformers(unittest.TestCase):
 		cls.train_texts = ['The quick brown fox jumps of the lazy dog.'] * 5
 
 	def test_convert(self):
-		for return_tensor in ['pt', 'tf']:
+		for nn_fwk in ['pt', 'tf']:
 			embeddings = Transformers(model_name_or_path='bert-base-uncased',
-				batch_size=3, padding=True, return_tensors=return_tensor)
+				batch_size=3, padding=True, nn_fwk=nn_fwk)
 			embs = embeddings.convert(self.train_texts)
 
 			assert len(self.train_texts) == len(embs), \
@@ -19,7 +19,7 @@ class TestModelEmbeddingsTransformers(unittest.TestCase):
 
 	def test_unsupport_model(self):
 		embeddings = Transformers(model_name_or_path='distilbert-base-uncased',
-			batch_size=3, padding=True, return_tensors='pt')
+			batch_size=3, padding=True, nn_fwk='pt')
 
 		with self.assertRaises(Exception) as error:
 			embs = embeddings.convert(self.train_texts)

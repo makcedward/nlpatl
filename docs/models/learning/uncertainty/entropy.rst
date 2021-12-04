@@ -1,7 +1,7 @@
-nlpatl.models.clustering\.sklearn_clustering
+nlpatl.models.learning.uncertainty\.entropy
 ============================================
 
-.. automodule:: nlpatl.models.clustering.sklearn_clustering
+.. automodule:: nlpatl.models.learning.uncertainty.entropy
     :members:
     :inherited-members:
     :show-inheritance:

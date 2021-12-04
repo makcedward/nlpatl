@@ -1,4 +1,3 @@
-from typing import List
 from scipy.stats import entropy
 import numpy as np
 
@@ -9,6 +8,18 @@ from nlpatl.storage.storage import Storage
 
 
 class EntropyLearning(SupervisedLearning):
+	"""
+		:param bool multi_label: Problem is mulit-label or not. Default is False
+		:param obj embeddings_model: Embeddings models from 
+			nlpatl.models.embeddings
+		:param obj classification_model: Classification models from 
+			nlpatl.models.embeddings
+		:param str name: Name of this embeddings
+
+		>>> import nlpatl.models.learning as nml
+		>>> model = nml.EntropyLearning()
+    """
+
 	def __init__(self, multi_label: bool = False, 
 		embeddings_model: Embeddings = None, 
 		classification_model: Classification = None, 

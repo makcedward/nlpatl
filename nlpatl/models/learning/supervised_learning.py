@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 from collections import defaultdict
 import numpy as np
 
@@ -24,8 +24,8 @@ class SupervisedLearning(Learning):
 	def validate(self):
 		super().validate(['embeddings', 'classification'])
 
-	def learn(self, x: [List[str], List[int], List[float], np.ndarray], 
-		y: [List[str], List[int]], include_leart_data: bool = True):
+	def learn(self, x: Union[List[str], List[int], List[float], np.ndarray], 
+		y: Union[List[str], List[int]], include_leart_data: bool = True):
 		
 		self.validate()
 

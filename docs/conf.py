@@ -31,9 +31,14 @@ class Mock(MagicMock):
         return MagicMock()
 
 MOCK_MODULES = [
-    'scipy', 'numpy', 'nltk', 
+    'scipy', 'scipy.stats', 
+    # 'numpy', 
+    'nltk', 'scipy.sparse',
     'datasets', 'Pillow',
-    'scikit-learn', 'xgboost', 'torch', 'torchvision', 'torchaudio', 
+    'sklearn', 
+    'sklearn.cluster', 'sklearn.linear_model',
+    'sklearn.svm', 'sklearn.ensemble',
+    'xgboost', 'torch', 'torchvision', 'torchaudio', 
     'tensorflow', 'transformers'
     ]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
@@ -53,7 +58,8 @@ extensions = ['sphinx.ext.doctest',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'sphinx.ext.autodoc']
+    'sphinx.ext.autodoc'
+    ]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
