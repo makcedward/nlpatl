@@ -32,7 +32,7 @@ class Mock(MagicMock):
 
 MOCK_MODULES = [
     'scipy', 'scipy.stats', 
-    # 'numpy', 
+    'numpy', 
     'nltk', 'scipy.sparse',
     'datasets', 'Pillow',
     'sklearn', 
