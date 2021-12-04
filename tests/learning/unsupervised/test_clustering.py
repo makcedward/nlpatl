@@ -6,7 +6,7 @@ import numpy as np
 
 from nlpatl.models.embeddings import Transformers
 from nlpatl.models.clustering import SkLearnClustering
-from nlpatl.models import ClusteringLearning
+from nlpatl.learning import ClusteringLearning
 from nlpatl.storage import Storage
 
 
@@ -16,7 +16,7 @@ class TestModelLearningClustering(unittest.TestCase):
 		cls.train_texts = load_dataset('ag_news')['train']['text'][:20]
 
 		cls.transformers_embeddings_model = Transformers(
-			'bert-base-uncased', return_tensors='pt', padding=True, 
+			'bert-base-uncased', nn_fwk='pt', padding=True, 
 			batch_size=3)
 		cls.sklearn_clustering_model = SkLearnClustering('kmeans')
 

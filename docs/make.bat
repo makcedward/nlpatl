@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=.
 set BUILDDIR=../build
-set SPHINXPROJ=nlpaug
+set SPHINXPROJ=nlpatl
 
 if "%1" == "" goto help
 

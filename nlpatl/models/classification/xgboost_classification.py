@@ -8,6 +8,15 @@ from nlpatl.models.classification import SkLearnClassification
 
 
 class XGBoostClassification(SkLearnClassification):
+	"""
+		:param str model_name: xgboost classification model name
+		:param dict model_config: Custom model paramateters
+		:param str name: Name of this classification
+
+		>>> import nlpatl.models.classification as nmcla
+		>>> model = nmcla.XGBoostClassification()
+    """
+
 	def __init__(self, model_name: str = 'xgboost', model_config: dict = {}, 
 		name: str = 'sklearn'):
 

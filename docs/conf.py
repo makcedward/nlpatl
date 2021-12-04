@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# nlpaug documentation build configuration file, created by
+# nlpatl documentation build configuration file, created by
 # sphinx-quickstart on Wed Aug  7 07:37:05 2019.
 #
 # This file is execfile()d with the current directory set to its
@@ -29,21 +29,16 @@ class Mock(MagicMock):
     @classmethod
     def __getattr__(cls, name):
         return MagicMock()
-    'scipy>=1.7.0',
-    'numpy>=1.16.2',
-    'transformers>=4.11.3',
-    'scikit-learn>=1.0.1',
-    'xgboost>=1.5.1',
-    'datasets>=1.8.0',
-    'torch>=1.9.0',
-    'torchvision>=0.10.0',
-    'torchaudio>=0.10.0',
-    'tensorflow>=2.7.0',
-    'Pillow>=8.2.0'
+
 MOCK_MODULES = [
-    'scipy', 'numpy', 'nltk', 
+    'scipy', 'scipy.stats', 
+    'numpy', 
+    'nltk', 'scipy.sparse',
     'datasets', 'Pillow',
-    'scikit-learn', 'xgboost', 'torch', 'torchvision', 'torchaudio', 
+    'sklearn', 
+    'sklearn.cluster', 'sklearn.linear_model',
+    'sklearn.svm', 'sklearn.ensemble',
+    'xgboost', 'torch', 'torchvision', 'torchaudio', 
     'tensorflow', 'transformers'
     ]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
@@ -63,7 +58,8 @@ extensions = ['sphinx.ext.doctest',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'sphinx.ext.autodoc']
+    'sphinx.ext.autodoc'
+    ]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

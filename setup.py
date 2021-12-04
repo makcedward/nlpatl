@@ -20,7 +20,8 @@ _deps = [
     'torchvision>=0.10.0',
     'torchaudio>=0.10.0',
     'tensorflow>=2.7.0',
-    'Pillow>=8.2.0'
+    'Pillow>=8.2.0',
+    'sphinx-rtd-theme>1.0.0'
 ]
 
 # support both w and w/ version

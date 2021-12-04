@@ -1,8 +1,9 @@
 Embeddings
-===================================
+==========
 
 .. toctree::
    :maxdepth: 6
 
-   ./embeddings
+   ./sentence_transformers
    ./transformers
+   ./torchvision

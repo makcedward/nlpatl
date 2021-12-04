@@ -4,10 +4,10 @@ from datasets import load_dataset
 
 from nlpatl.models.embeddings import Transformers
 from nlpatl.models.classification import SkLearnClassification
-from nlpatl.models import MarginLearning
+from nlpatl.learning import EntropyLearning
 
 
-class TestModelLearningMargin(unittest.TestCase):
+class TestModelLearningEntropy(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
 		texts = load_dataset('ag_news')['train']['text']
@@ -18,14 +18,14 @@ class TestModelLearningMargin(unittest.TestCase):
 		cls.test_labels = labels[0:10] + labels[200:210]
 
 		cls.transformers_embeddings_model = Transformers(
-			'bert-base-uncased', return_tensors='pt', padding=True, 
+			'bert-base-uncased', nn_fwk='pt', padding=True, 
 			batch_size=3)
 		cls.sklearn_classification_model = SkLearnClassification(
 			'logistic_regression',
 			model_config={'max_iter': 500})
 
 	def test_learning(self):
-		learning = MarginLearning(
+		learning = EntropyLearning(
 			embeddings_model=self.transformers_embeddings_model,
 			classification_model=self.sklearn_classification_model
 			)

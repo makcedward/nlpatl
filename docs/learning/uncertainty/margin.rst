@@ -1,7 +1,7 @@
-nlpatl.models.learning.uncertainity
+nlpatl.learning.uncertainty\.margin
 ===================================
 
-.. automodule:: models.learning.uncertainity.entropy
+.. automodule:: nlpatl.learning.uncertainty.margin
     :members:
     :inherited-members:
     :show-inheritance:

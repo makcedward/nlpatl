@@ -1,22 +1,20 @@
-from typing import List
+from typing import List, Union
 from collections import defaultdict
 import numpy as np
 
 from nlpatl.models.classification.classification import Classification
 from nlpatl.models.embeddings.embeddings import Embeddings
-from nlpatl.models.learning.learning import Learning
+from nlpatl.learning.learning import Learning
 from nlpatl.storage.storage import Storage
 
 
 class SupervisedLearning(Learning):
 	def __init__(self, embeddings_model: Embeddings,
 		classification_model: Classification,
-		x: [List[str], List[float], np.ndarray] = None,
-		y: [List[str], List[int], np.ndarray] = None,
 		multi_label: bool = False, 
 		name: str = 'classification_learning'):
 
-		super().__init__(x=x, y=y, multi_label=multi_label, 
+		super().__init__(multi_label=multi_label, 
 			embeddings_model=embeddings_model,
 			classification_model=classification_model,
 			name=name)
@@ -24,10 +22,14 @@ class SupervisedLearning(Learning):
 	def validate(self):
 		super().validate(['embeddings', 'classification'])
 
-	def learn(self, x: [List[str], List[int], List[float], np.ndarray], 
-		y: [List[str], List[int]], include_leart_data: bool = True):
+	def learn(self, x: Union[List[str], List[int], List[float], np.ndarray], 
+		y: Union[List[str], List[int]], include_leart_data: bool = True):
 		
 		self.validate()
+
+		self.train_x = x
+		self.train_y = y
+		self.init_unique_y(y)
 
 		if include_leart_data and self.learn_x is not None:
 			if type(x) is np.ndarray and type(self.learn_x) is ndarray:

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 import numpy as np
 
 class Embeddings:
@@ -6,7 +6,7 @@ class Embeddings:
 		self.batch_size = batch_size
 		self.name = name
 
-	def convert(self, inputs: [List[str], List[np.ndarray]]) -> List[float]:
+	def convert(self, inputs: Union[List[str], List[np.ndarray]]) -> List[float]:
 		...
 	
 	def batch(self, arr: List, n: int = 1):

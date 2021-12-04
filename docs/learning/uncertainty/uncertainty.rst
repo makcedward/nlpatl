@@ -1,5 +1,5 @@
 Uncertainity Learning
-===================================
+=====================
 
 .. toctree::
    :maxdepth: 6

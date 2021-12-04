@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 from collections import defaultdict
 import numpy as np
 from sklearn.cluster import (
@@ -14,6 +14,15 @@ MODEL_FOR_SKLEARN_CLUSTERING_MAPPING_NAMES = {
 
 
 class SkLearnClustering(Clustering):
+	"""
+		:param str model_name: sci-kit learn clustering model name
+		:param dict model_config: Custom model paramateters
+		:param str name: Name of this clustering
+
+		>>> import nlpatl.models.clustering as nmclu
+		>>> model = nmclu.SkLearnClustering()
+    """
+
 	def __init__(self, model_name: str = 'kmeans', model_config: dict = {}, 
 		name: str = 'sklearn_clustering'):
 
@@ -34,16 +43,29 @@ class SkLearnClustering(Clustering):
 	def get_mapping() -> dict:
 		return MODEL_FOR_SKLEARN_CLUSTERING_MAPPING_NAMES
 
-	def train(self, inputs: [List[float], np.ndarray]):
-		self.model.fit(inputs)
+	def train(self, x: Union[List[float], np.ndarray]):
+		"""
+			:param np.ndarray x: Raw features
 
-	def predict_proba(self, inputs: List[float], 
+			>>> model.train(x=x)
+		"""
+
+		self.model.fit(x)
+
+	def predict_proba(self, x: List[float], 
 		predict_config: dict={}) -> Storage:
+
+		"""
+			:param np.ndarray x: Features
+			:param dict predict_config: Custom model prediction paramateters
+
+			>>> model.predict_proba(x=x)
+		"""
 
 		num_cluster = self.model.n_clusters
 
-		clust_dists = self.model.transform(inputs)
-		preds = self.model.predict(inputs, **predict_config)
+		clust_dists = self.model.transform(x)
+		preds = self.model.predict(x, **predict_config)
 		total_record = len(preds)
 
 		indices = np.zeros(total_record, dtype=int)

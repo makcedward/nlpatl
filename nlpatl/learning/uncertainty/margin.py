@@ -1,13 +1,24 @@
-from typing import List
 import numpy as np
 
 from nlpatl.models.classification.classification import Classification
 from nlpatl.models.embeddings.embeddings import Embeddings
-from nlpatl.models.learning.supervised_learning import SupervisedLearning
+from nlpatl.learning.supervised_learning import SupervisedLearning
 from nlpatl.storage.storage import Storage
 
 
 class MarginLearning(SupervisedLearning):
+	"""
+		:param bool multi_label: Problem is mulit-label or not. Default is False
+		:param obj embeddings_model: Embeddings models from 
+			nlpatl.models.embeddings
+		:param obj classification_model: Classification models from 
+			nlpatl.models.embeddings
+		:param str name: Name of this embeddings
+
+		>>> import nlpatl.models.learning as nml
+		>>> model = nml.MarginLearning()
+    """
+
 	def __init__(self, multi_label: bool = False, 
 		embeddings_model: Embeddings = None, 
 		classification_model: Classification = None, 
