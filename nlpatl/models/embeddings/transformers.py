@@ -1,10 +1,14 @@
 from typing import List
-from transformers import (
-	AutoTokenizer, 
-	AutoModel, TFAutoModel 
-)
 import numpy as np
 
+try:
+	from transformers import (
+		AutoTokenizer, 
+		AutoModel, TFAutoModel 
+	)
+except ImportError:
+	# No installation required if not using this function
+	pass
 try:
 	import torch
 except ImportError:
