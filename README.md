@@ -21,11 +21,12 @@ pip install git+https://github.com/makcedward/nlpatl.git
 
 # Release
 0.0.2dev
-* [Completed] transformers supports Tensorflow
-* [Completed] performance tuning during clustering
-* [Completed] support multi-label
+* [Completed] Transformers supports Tensorflow
+* [Completed] Performance tuning during clustering
+* [Completed] Support multi-label
 * [Completed] Custom Embeddings, Classification, Clustering, Scoring(Learning) function
-* [Completed] Support Image embeddings and display Image
+* [Completed] Support TorchVision for image embeddings
+* [Completed] Support SentenceTransformers
 
 # Citation
 ```latex
