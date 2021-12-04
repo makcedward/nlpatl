@@ -30,20 +30,20 @@ class Learning:
 	RETURN_TYPES = ['dict', 'object']
 	DATA_TYPES = ['text', 'image', 'audio']
 
-	def __init__(self, x: [List[str], List[float], np.ndarray] = None,
-		y: [List[str], List[int], np.ndarray] = None,
-		multi_label: bool = False, embeddings_model: Embeddings = None, 
+	def __init__(self, multi_label: bool = False, 
+		embeddings_model: Embeddings = None, 
 		clustering_model: Clustering = None, 
 		classification_model: Classification = None, 
 		name: str = 'learning'):
 
 		self.name = name
 		self.multi_label = multi_label
-		self.train_x = x
-		self.train_y = y
+		self.train_x = None
+		self.train_y = None
 		self.learn_id = None
 		self.learn_x = None
 		self.learn_y = None
+		self.unique_y = set()
 		self.embeddings_model = embeddings_model
 		self.clustering_model = clustering_model
 		self.classification_model = classification_model
@@ -54,14 +54,13 @@ class Learning:
 
 		if 'embeddings' in targets:
 			assert self.embeddings_model is not None, \
-				'Embeddings model does not initialize yet. Run `init_text_embeddings_model`' \
-				'init_image_embeddings_model` or `init_audio_embeddings_model first'
+				'Embeddings model does not initialize yet.'
 		if 'clustering' in targets:
 			assert self.clustering_model is not None, \
-				'Clustering model does not initialize yet. Run `init_clusting_model` first'
+				'Clustering model does not initialize yet.'
 		if 'classification' in targets:
 			assert self.classification_model is not None, \
-				'Classification model does not initialize yet. Run `init_classification_model` first'
+				'Classification model does not initialize yet.'
 
 	def get_return_object(self, d, return_type):
 		assert return_type in self.RETURN_TYPES, \
@@ -84,12 +83,21 @@ class Learning:
 	def get_learnt_data(self):
 		return self.learn_id, self.learn_x, self.learn_y
 
-	def get_unique_labels(self):
-		labels = np.unique(np.concatenate([
-			self.train_y if self.train_y else [], 
-			self.learn_y if self.learn_y else [], 
-		]))
-		return set(labels.tolist())
+	def init_unique_y(self, y):
+		self.unique_y = set(list(y))
+
+	def add_unique_y(self, y):
+		y_data_type = type(next(iter(self.unique_y))) if self.unique_y else None
+
+		if type(y) is list:
+			for label in y:
+				if y_data_type == int:
+					label = int(label)
+				self.unique_y.add(label)
+		else:
+			if y_data_type == int:
+				y = int(y)
+			self.unique_y.add(y)
 
 	def train(self, x: object, y: object):
 		...
@@ -140,6 +148,7 @@ class Learning:
 			self.learn_y.append(y)
 		else:
 			self.learn_y = [y]
+		self.add_unique_y(y)
 
 		if self.learn_id:
 			self.learn_id.append(_id)
@@ -155,15 +164,13 @@ class Learning:
 					'`,`'.join(self.DATA_TYPES), data_type)
 		
 		result = self.explore(x, num_sample=num_sample, return_type='object')
-
-		possible_labels = self.get_unique_labels()
 		i = 0
 		while i < len(result.features):
 			feature = result.features[i]
 			_id = result.indices[i]
 			metadata = '{}/{} Existing Label:{}\nID:{}\n'.format(
 				i+1, len(result.features), 
-				possible_labels if possible_labels else [], _id)
+				list(self.unique_y) if self.unique_y else [], _id)
 
 			# Display on notebook
 			if data_type == 'text':
@@ -185,10 +192,9 @@ class Learning:
 				labels = list(set([label for label in labels if label]))
 
 				self.educate(_id, feature, labels)
-				for label in labels:
-					possible_labels.add(label)
+				self.add_unique_y(labels)
 			else:
 				self.educate(_id, feature, label)
-				possible_labels.add(label)
+				self.add_unique_y(label)
 			
 			i += 1
