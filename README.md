@@ -28,6 +28,7 @@ pip install git+https://github.com/makcedward/nlpatl.git
 * [Completed] Custom Embeddings, Classification, Clustering, Scoring(Learning) function
 * [Completed] Support TorchVision for image embeddings
 * [Completed] Support SentenceTransformers
+* [Completed] Added Least Confidence Learning and Most Confidence Learning
 
 # Citation
 ```latex

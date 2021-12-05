@@ -48,8 +48,11 @@ if __name__ == '__main__':
     # suites.append(unittest.TestLoader().loadTestsFromName('learning.test_supervised_learning'))
     # suites.append(unittest.TestLoader().loadTestsFromName('learning.test_unsupervised_learning'))
 
+    # suites.append(unittest.TestLoader().loadTestsFromName('learning.certainty.test_most_confidence'))
+
     # suites.append(unittest.TestLoader().loadTestsFromName('learning.unsupervised.test_clustering'))
     
+    # suites.append(unittest.TestLoader().loadTestsFromName('learning.uncertainty.test_least_confidence'))
     # suites.append(unittest.TestLoader().loadTestsFromName('learning.uncertainty.test_margin'))
     # suites.append(unittest.TestLoader().loadTestsFromName('learning.uncertainty.test_entropy'))
 
