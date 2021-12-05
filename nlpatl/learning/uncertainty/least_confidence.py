@@ -7,7 +7,7 @@ from nlpatl.learning.supervised_learning import SupervisedLearning
 from nlpatl.storage import Storage
 
 
-class EntropyLearning(SupervisedLearning):
+class LeastConfidenceLearning(SupervisedLearning):
 	"""
 		:param bool multi_label: Problem is mulit-label or not. Default is False
 		:param obj embeddings_model: Embeddings models from 
@@ -17,13 +17,13 @@ class EntropyLearning(SupervisedLearning):
 		:param str name: Name of this embeddings
 
 		>>> import nlpatl.learning as nl
-		>>> model = nl.EntropyLearning()
+		>>> model = nl.LeastConfidenceLearning()
     """
 
 	def __init__(self, multi_label: bool = False, 
 		embeddings_model: Embeddings = None, 
 		classification_model: Classification = None, 
-		name: str = 'entropy_sampling'):
+		name: str = 'least_confidence_sampling'):
 	
 		super().__init__(multi_label=multi_label, 
 			embeddings_model=embeddings_model,
@@ -35,13 +35,13 @@ class EntropyLearning(SupervisedLearning):
 
 		num_node = min(num_sample, len(data))
 
-		# Calucalte entropy
-		entropies = entropy(data.values, axis=1)
-		indices = np.argpartition(-entropies, num_node-1)[:num_node]
+		# Calucalte least confidence
+		least_confidences = 1 - np.max(data.values, axis=1)
+		indices = np.argpartition(-least_confidences, num_node-1)[:num_node]
 
 		data.keep(indices)
 		
-		# Replace probabilies by entropies
-		data.values = entropies[indices]
+		# Replace probabilies by least_confidences
+		data.values = least_confidences[indices]
 
 		return data
