@@ -17,8 +17,8 @@ class ClusteringLearning(UnsupervisedLearning):
 			nlpatl.models.embeddings
 		:param str name: Name of this embeddings
 
-		>>> import nlpatl.models.learning as nml
-		>>> model = nml.ClusteringLearning()
+		>>> import nlpatl.learning as nl
+		>>> model = nl.ClusteringLearning()
     """
     
 	def __init__(self, multi_label: bool = False, 
