@@ -1,11 +1,9 @@
 from typing import List
-from collections import defaultdict
-import numpy as np
 
 from nlpatl.models.clustering.clustering import Clustering
 from nlpatl.models.embeddings.embeddings import Embeddings
-from nlpatl.learning.learning import Learning
-from nlpatl.storage.storage import Storage
+from nlpatl.learning import Learning
+from nlpatl.storage import Storage
 
 
 class UnsupervisedLearning(Learning):

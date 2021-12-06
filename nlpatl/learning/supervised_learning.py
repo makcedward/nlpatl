@@ -2,10 +2,10 @@ from typing import List, Union
 from collections import defaultdict
 import numpy as np
 
-from nlpatl.models.classification.classification import Classification
-from nlpatl.models.embeddings.embeddings import Embeddings
-from nlpatl.learning.learning import Learning
-from nlpatl.storage.storage import Storage
+from nlpatl.models.classification import Classification
+from nlpatl.models.embeddings import Embeddings
+from nlpatl.learning import Learning
+from nlpatl.storage import Storage
 
 
 class SupervisedLearning(Learning):
@@ -29,7 +29,6 @@ class SupervisedLearning(Learning):
 
 		self.train_x = x
 		self.train_y = y
-		self.init_unique_y(y)
 
 		if include_leart_data and self.learn_x is not None:
 			if type(x) is np.ndarray and type(self.learn_x) is ndarray:
@@ -43,6 +42,7 @@ class SupervisedLearning(Learning):
 		else:
 			x_features = self.embeddings_model.convert(x)
 
+		self.init_unique_y(y)
 		self.classification_model.train(x_features, y)
 
 	def explore(self, x: List[str], return_type: str = 'dict', 

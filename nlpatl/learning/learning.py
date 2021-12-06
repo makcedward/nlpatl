@@ -76,12 +76,28 @@ class Learning:
 		indices: np.ndarray) -> Union[List[str], List[float], np.ndarray]:
 
 		if type(data) is np.ndarray:
-			return data[indices]
+			if type(indices) is list:
+				indices = np.array(indices)
+			return data[~np.isin(data, indices)]
 		else:
-			return [data[i] for i in indices.tolist()]
+			if type(indices) is np.ndarray:
+				indices = indices.tolist()
+			return [data[i] for i in range(len(data)) if i not in indices]
 
 	def get_learnt_data(self):
 		return self.learn_id, self.learn_x, self.learn_y
+
+	def concatenate(self, data):
+		if type(data[0] is list):
+			return [c for d in data for c in d]
+		if type(data[0] is np.ndarray):
+			return np.concatenate(data)
+		raise ValueError('Does not support {} data type yet'.format(type(data[0])))
+
+	def get_annotated_data(self):
+		x = self.concatenate([d for d in [self.train_x, self.learn_x] if d])
+		y = self.concatenate([d for d in [self.train_y, self.learn_y] if d])
+		return x, y
 
 	def init_unique_y(self, y):
 		self.unique_y = set(list(y))
@@ -91,16 +107,13 @@ class Learning:
 
 		if type(y) is list:
 			for label in y:
-				if y_data_type == int:
+				if y_data_type is int:
 					label = int(label)
 				self.unique_y.add(label)
 		else:
-			if y_data_type == int:
+			if y_data_type is int:
 				y = int(y)
 			self.unique_y.add(y)
-
-	def train(self, x: object, y: object):
-		...
 
 	def keep_most_valuable(self, data: Storage, num_sample: int) -> Storage: 
 		"""
@@ -144,6 +157,10 @@ class Learning:
 				'Only support `{}`'.format(type(x), '`,`'.join(
 					['str', 'int', 'float', 'list', 'np.ndarray']))
 
+		if self.unique_y:
+			y_data_type = type(next(iter(self.unique_y)))
+			if y_data_type is int:
+				y = int(y)
 		if self.learn_y:
 			self.learn_y.append(y)
 		else:
@@ -198,3 +215,5 @@ class Learning:
 				self.add_unique_y(label)
 			
 			i += 1
+
+	
