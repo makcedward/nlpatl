@@ -1,7 +1,4 @@
-from typing import List
-from datasets import load_dataset
 import unittest
-import datasets
 import numpy as np
 
 from nlpatl.sampling.unsupervised import ClusteringSampling
@@ -19,7 +16,7 @@ class TestSamplingClustering(unittest.TestCase):
 			[0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3]
 		)
 
-	def test_explore(self):
+	def test_sample(self):
 		expected_indices = np.array([0, 6, 9, 13])
 
 		num_sample = 1

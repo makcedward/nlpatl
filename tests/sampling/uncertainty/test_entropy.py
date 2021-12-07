@@ -23,7 +23,7 @@ class TestSamplingEntropy(unittest.TestCase):
 		    [0.71795835, 0.02464577, 0.07842602, 0.1400593, 0.03891056]
 		])
 
-	def test_learning(self):
+	def test_sample(self):
 		expected_indices = np.array([9, 12, 11])
 
 		num_sample = 3
