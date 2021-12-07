@@ -13,12 +13,12 @@ from nlpatl.models.classification import (
 	SkLearnClassification, 
 	XGBoostClassification
 )
-from nlpatl.learning import SupervisedLearning
-from nlpatl.sampling.uncertainty import EntropySampling
+from nlpatl.learning import SemiSupervisedLearning
+from nlpatl.sampling.certainty import MostConfidenceSampling
 from nlpatl.storage import Storage
 
 
-class TestLearningSupervised(unittest.TestCase):
+class TestLearningSemiSupervised(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
 		texts = load_dataset('ag_news')['train']['text']
@@ -39,11 +39,11 @@ class TestLearningSupervised(unittest.TestCase):
 				'use_label_encoder': False,
 				'eval_metric': 'logloss'
 			})
-		cls.entropy_sampling = EntropySampling()
+		cls.most_confidence_sampling = MostConfidenceSampling(threshold=0.85)
 
 	def test_no_model(self):
-		learning = SupervisedLearning(
-			sampling=self.entropy_sampling,
+		learning = SemiSupervisedLearning(
+			sampling=self.most_confidence_sampling,
 			embeddings_model=None,
 			classification_model=None
 			)
@@ -61,8 +61,8 @@ class TestLearningSupervised(unittest.TestCase):
 			'Does not initialize classification model but still able to run'
 
 	def test_explore_by_sklearn(self):
-		learning = SupervisedLearning(
-			sampling=self.entropy_sampling,
+		learning = SemiSupervisedLearning(
+			sampling=self.most_confidence_sampling,
 			embeddings_model=self.transformers_embeddings_model,
 			classification_model=self.sklearn_classification_model
 			)
@@ -72,8 +72,8 @@ class TestLearningSupervised(unittest.TestCase):
 		assert result, 'No output'
 
 	def test_explore_by_xgboost(self):
-		learning = SupervisedLearning(
-			sampling=self.entropy_sampling,
+		learning = SemiSupervisedLearning(
+			sampling=self.most_confidence_sampling,
 			embeddings_model=self.transformers_embeddings_model,
 			classification_model=self.xgboost_classification_model
 			)
@@ -88,11 +88,11 @@ class TestLearningSupervised(unittest.TestCase):
 			def convert(self, inputs: List[str]) -> np.ndarray:
 				return np.random.rand(len(inputs), 5)
 
-		learning = SupervisedLearning(
-			sampling=self.entropy_sampling,
+		learning = SemiSupervisedLearning(
+			sampling=self.most_confidence_sampling,
+			multi_label=True, 
 			embeddings_model=CustomEmbeddings(),
-			classification_model=self.sklearn_classification_model,
-			multi_label=True,
+			classification_model=self.sklearn_classification_model
 			)
 
 		learning.learn(self.train_texts, self.train_labels)
@@ -124,8 +124,8 @@ class TestLearningSupervised(unittest.TestCase):
 					values=probs,
 					groups=preds.tolist())
 
-		learning = SupervisedLearning(
-			sampling=self.entropy_sampling,
+		learning = SemiSupervisedLearning(
+			sampling=self.most_confidence_sampling,
 			embeddings_model=self.transformers_embeddings_model,
 			classification_model=CustomClassification(model=None),
 			multi_label=True

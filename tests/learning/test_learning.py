@@ -7,13 +7,15 @@ from nlpatl.models.embeddings import Transformers
 from nlpatl.models.clustering import SkLearnClustering
 from nlpatl.models.classification import SkLearnClassification
 from nlpatl.learning import (
-	ClusteringLearning,
-	EntropyLearning
+	SupervisedLearning,
+	UnsupervisedLearning
 )
+from nlpatl.sampling.uncertainty import EntropySampling
+from nlpatl.sampling.unsupervised import ClusteringSampling
 from nlpatl.storage import Storage
 
 
-class TestModelLearning(unittest.TestCase):
+class TestLearning(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
 		texts = load_dataset('ag_news')['train']['text']
@@ -30,9 +32,12 @@ class TestModelLearning(unittest.TestCase):
 		cls.sklearn_classification_model = SkLearnClassification(
 			'logistic_regression',
 			model_config={'max_iter': 500})
+		cls.entropy_sampling = EntropySampling()
+		cls.clustering_sampling = ClusteringSampling()
 
 	def test_unsupervised_explore(self):
-		learning = ClusteringLearning(
+		learning = UnsupervisedLearning(
+			sampling=self.clustering_sampling,
 			embeddings_model=self.transformers_embeddings_model, 
 			clustering_model=self.sklearn_clustering_model)
 
@@ -48,7 +53,8 @@ class TestModelLearning(unittest.TestCase):
 		assert learning.learn_x, 'Unable to explore'
 
 	def test_uncertainty_educate(self):
-		learning = EntropyLearning(
+		learning = SupervisedLearning(
+			sampling=self.entropy_sampling,
 			embeddings_model=self.transformers_embeddings_model,
 			classification_model=self.sklearn_classification_model
 			)
@@ -76,14 +82,16 @@ class TestModelLearning(unittest.TestCase):
 			assert f not in first_result['features'], 'Low quality of learnt data'
 
 	def test_return_type(self):
-		learning = ClusteringLearning(
+		learning = UnsupervisedLearning(
+			sampling=self.clustering_sampling,
 			embeddings_model=self.transformers_embeddings_model, 
 			clustering_model=self.sklearn_clustering_model)
 		result = learning.explore(self.train_texts, return_type='object')
 
 		assert result.features, 'Not object format'
 
-		learning = EntropyLearning(
+		learning = SupervisedLearning(
+			sampling=self.entropy_sampling,
 			embeddings_model=self.transformers_embeddings_model, 
 			classification_model=self.sklearn_classification_model
 			)
@@ -94,7 +102,9 @@ class TestModelLearning(unittest.TestCase):
 		assert result.features, 'Not object format'
 
 	def test_educate_multi_label(self):
-		learning = ClusteringLearning(multi_label=True)
+		learning = UnsupervisedLearning(
+			sampling=self.entropy_sampling,
+			multi_label=True)
 
 		expected_labels = [
 			['1'],
