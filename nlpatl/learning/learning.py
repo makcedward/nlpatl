@@ -12,28 +12,32 @@ except ImportError:
 	# No installation required if not using this function
 	pass
 
-from nlpatl.models.classification.classification import Classification
-from nlpatl.models.clustering.clustering import Clustering
-from nlpatl.models.embeddings.embeddings import Embeddings
-from nlpatl.models.embeddings.transformers import Transformers
-from nlpatl.models.embeddings.torchvision import TorchVision
-from nlpatl.models.clustering.sklearn_clustering import (
+from nlpatl.models.clustering import (
+	Clustering,
 	SkLearnClustering
 )
-from nlpatl.models.classification.sklearn_classification import (
+from nlpatl.models.classification import (
+	Classification,
 	SkLearnClassification
 )
-from nlpatl.storage.storage import Storage
+from nlpatl.models.embeddings import (
+	Embeddings,
+	Transformers,
+	TorchVision
+)
+from nlpatl.sampling import Sampling
+from nlpatl.storage import Storage
 
 
 class Learning:
 	RETURN_TYPES = ['dict', 'object']
 	DATA_TYPES = ['text', 'image', 'audio']
 
-	def __init__(self, multi_label: bool = False, 
+	def __init__(self, sampling: Sampling,
 		embeddings_model: Embeddings = None, 
 		clustering_model: Clustering = None, 
 		classification_model: Classification = None, 
+		multi_label: bool = False, 
 		name: str = 'learning'):
 
 		self.name = name
@@ -44,6 +48,7 @@ class Learning:
 		self.learn_x = None
 		self.learn_y = None
 		self.unique_y = set()
+		self.sampling = sampling
 		self.embeddings_model = embeddings_model
 		self.clustering_model = clustering_model
 		self.classification_model = classification_model
@@ -114,15 +119,6 @@ class Learning:
 			if y_data_type is int:
 				y = int(y)
 			self.unique_y.add(y)
-
-	def keep_most_valuable(self, data: Storage, num_sample: int) -> Storage: 
-		"""
-			:param Storage x: processed data
-			:param int num_sample: Total number of sample for labeling
-			
-			>>> model.keep_most_valuable(x=x)
-		"""
-		...
 
 	def learn(self, x: [List[str], List[int], List[float], np.ndarray], 
 		y: [List[str], List[int]], include_leart_data: bool = True):

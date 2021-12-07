@@ -1,20 +1,24 @@
 from typing import List
 
-from nlpatl.models.clustering.clustering import Clustering
-from nlpatl.models.embeddings.embeddings import Embeddings
+from nlpatl.models.clustering import Clustering
+from nlpatl.models.embeddings import Embeddings
 from nlpatl.learning import Learning
+from nlpatl.sampling import Sampling
 from nlpatl.storage import Storage
 
 
 class UnsupervisedLearning(Learning):
-	def __init__(self, multi_label: bool = False, 
+	def __init__(self, 
+		sampling: Sampling,
 		embeddings_model: Embeddings = None, 
 		clustering_model: Clustering = None, 
+		multi_label: bool = False, 
 		name: str = 'unsupervised_samlping'):
 
-		super().__init__(multi_label=multi_label, 
+		super().__init__(sampling=sampling,
 			embeddings_model=embeddings_model,
 			clustering_model=clustering_model,
+			multi_label=multi_label, 
 			name=name)
 
 	def validate(self):
@@ -30,7 +34,11 @@ class UnsupervisedLearning(Learning):
 		self.clustering_model.train(features)
 		preds = self.clustering_model.predict_proba(features)
 
-		preds = self.keep_most_valuable(preds, num_sample=num_sample)
+		indices, values = self.sampling.sample(
+			preds.values, preds.groups, num_sample=num_sample)
+		preds.keep(indices)
+		# Replace original probabilies by sampling values
+		preds.values = values
 
 		preds.features = [inputs[i] for i in preds.indices.tolist()]
 

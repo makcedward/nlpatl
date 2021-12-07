@@ -1,8 +1,7 @@
-from scipy.stats import entropy
+from typing import Tuple
 import numpy as np
 
 from nlpatl.sampling import Sampling
-from nlpatl.storage import Storage
 
 
 class MostConfidenceSampling(Sampling):
@@ -12,9 +11,6 @@ class MostConfidenceSampling(Sampling):
 		:param float threshold: Minimum probability of model prediction. Default
 			value is 0.85
 		:param str name: Name of this sampling
-
-		>>> import nlpatl.learning as nl
-		>>> model = nl.LeastConfidenceLearning()
     """
 
 	def __init__(self, threshold: float = 0.85,
@@ -24,17 +20,19 @@ class MostConfidenceSampling(Sampling):
 
 		self.threshold = threshold
 
-	def sample(self, data: Storage, num_sample: int) -> Storage:
+	def sample(self, data: np.ndarray, 
+		num_sample: int) -> Tuple[np.ndarray, np.ndarray]:
+
+		"""
+			:param Storage x: processed data
+			:param int num_sample: Total number of sample for labeling
+		"""
+
 		num_node = min(num_sample, len(data))
 
 		# Calucalte most confidence
-		most_confidences = np.max(data.values, axis=1)
+		most_confidences = np.max(data, axis=1)
 		indices = np.argwhere(most_confidences > self.threshold).flatten()
 		indices = np.random.choice(indices, num_node)
 
-		data.keep(indices)
-		
-		# Replace probabilies by most_confidences
-		data.values = most_confidences[indices]
-
-		return data
+		return indices, most_confidences[indices]

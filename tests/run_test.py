@@ -19,11 +19,12 @@ if __name__ == '__main__':
     # test sub package
     test_dirs = [
         'tests/learning/',
-        'tests/learning/unsupervised/',
-        'tests/learning/uncertainty/',
         'tests/models/embeddings/',
         'tests/models/clustering/',
         'tests/models/classification/',
+        'tests/sampling/certainty/',
+        'tests/sampling/uncertainty/',
+        'tests/sampling/unsupervised/',   
     ]
     for test_dir in test_dirs:
        loader = unittest.TestLoader()
@@ -43,18 +44,20 @@ if __name__ == '__main__':
     # Classification
     # suites.append(unittest.TestLoader().loadTestsFromName('models.classification.test_sklearn_classification'))
 
+    # Sampling
+    # suites.append(unittest.TestLoader().loadTestsFromName('sampling.certainty.test_most_confidence'))
+    
+    # suites.append(unittest.TestLoader().loadTestsFromName('sampling.uncertainty.test_least_confidence'))
+    # suites.append(unittest.TestLoader().loadTestsFromName('sampling.uncertainty.test_margin'))
+    # suites.append(unittest.TestLoader().loadTestsFromName('sampling.uncertainty.test_entropy'))
+
+    # suites.append(unittest.TestLoader().loadTestsFromName('sampling.unsupervised.test_clustering'))
+
     # Labeling
     # suites.append(unittest.TestLoader().loadTestsFromName('learning.test_learning'))
+    # suites.append(unittest.TestLoader().loadTestsFromName('learning.test_semi_supervised_learning'))
     # suites.append(unittest.TestLoader().loadTestsFromName('learning.test_supervised_learning'))
     # suites.append(unittest.TestLoader().loadTestsFromName('learning.test_unsupervised_learning'))
-
-    # suites.append(unittest.TestLoader().loadTestsFromName('learning.certainty.test_most_confidence'))
-
-    # suites.append(unittest.TestLoader().loadTestsFromName('learning.unsupervised.test_clustering'))
-    
-    # suites.append(unittest.TestLoader().loadTestsFromName('learning.uncertainty.test_least_confidence'))
-    # suites.append(unittest.TestLoader().loadTestsFromName('learning.uncertainty.test_margin'))
-    # suites.append(unittest.TestLoader().loadTestsFromName('learning.uncertainty.test_entropy'))
 
     for suite in suites:
         runner.run(suite)

@@ -12,14 +12,12 @@ from nlpatl.models.clustering import (
 	Clustering, 
 	SkLearnClustering
 )
-from nlpatl.learning import (
-	UnsupervisedLearning,
-	ClusteringLearning
-)
+from nlpatl.learning import UnsupervisedLearning
+from nlpatl.sampling.unsupervised import ClusteringSampling
 from nlpatl.storage import Storage
 
 
-class TestModelLearningUnsupervised(unittest.TestCase):
+class TestLearningUnsupervised(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
 		cls.train_texts = load_dataset('ag_news')['train']['text'][:20]
@@ -28,9 +26,12 @@ class TestModelLearningUnsupervised(unittest.TestCase):
 			'bert-base-uncased', nn_fwk='pt', padding=True, 
 			batch_size=3)
 		cls.sklearn_clustering_model = SkLearnClustering('kmeans')
+		cls.clustering_sampling = ClusteringSampling()
 
 	def test_no_model(self):
-		learning = UnsupervisedLearning()
+		learning = UnsupervisedLearning(
+			sampling=self.clustering_sampling
+			)
 
 		with self.assertRaises(Exception) as error:
 			learning.explore(self.train_texts)
@@ -48,43 +49,12 @@ class TestModelLearningUnsupervised(unittest.TestCase):
 			def convert(self, inputs: List[str]) -> np.ndarray:
 				return np.random.rand(len(inputs), 5)
 
-		learning = ClusteringLearning(multi_label=True, 
+		learning = UnsupervisedLearning(
+			sampling=self.clustering_sampling,
 			embeddings_model=CustomEmbeddings(),
-			clustering_model=self.sklearn_clustering_model
+			clustering_model=self.sklearn_clustering_model,
+			multi_label=True, 
 			)
 		learning.explore(self.train_texts)
 
 		assert True, 'Unable to apply custom embeddings model'
-
-	def test_custom_clustering_model(self):
-		class CustomClustering(Clustering):
-			def __init__(self, model):
-				self.model = model
-
-			def train(self, x: np.array):
-				"""
-					Do training here
-					e.g. self.model.train(x)
-				""" 
-				...
-
-			def predict_proba(self, x, predict_config: dict={}) -> Storage:
-				"""
-					Do calculation here
-					e.g. preds = self.model.cal(x, **predict_config)
-				"""
-				indices = np.array(list(range(len(x))))
-				values = np.random.rand(len(x))
-				groups = np.random.randint(0, 3, len(x))
-
-				return Storage(
-					indices=indices,
-					values=values,
-					groups=groups.tolist())
-
-		learning = ClusteringLearning(multi_label=True, 
-			embeddings_model=self.transformers_embeddings_model,
-			clustering_model=CustomClustering(model=None))
-		learning.explore(self.train_texts)
-
-		assert True, 'Unable to apply custom clustering model'

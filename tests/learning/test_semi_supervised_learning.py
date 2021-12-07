@@ -14,13 +14,11 @@ from nlpatl.models.classification import (
 	XGBoostClassification
 )
 from nlpatl.learning import SemiSupervisedLearning
-from nlpatl.sampling import (
-	MostConfidenceSampling
-)
+from nlpatl.sampling.certainty import MostConfidenceSampling
 from nlpatl.storage import Storage
 
 
-class TestModelLearningSemiSupervised(unittest.TestCase):
+class TestLearningSemiSupervised(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
 		texts = load_dataset('ag_news')['train']['text']
@@ -128,9 +126,10 @@ class TestModelLearningSemiSupervised(unittest.TestCase):
 
 		learning = SemiSupervisedLearning(
 			sampling=self.most_confidence_sampling,
-			multi_label=True, 
 			embeddings_model=self.transformers_embeddings_model,
-			classification_model=CustomClassification(model=None))
+			classification_model=CustomClassification(model=None),
+			multi_label=True
+			)
 
 		learning.learn(self.train_texts, self.train_labels)
 

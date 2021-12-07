@@ -5,18 +5,22 @@ import numpy as np
 from nlpatl.models.classification import Classification
 from nlpatl.models.embeddings import Embeddings
 from nlpatl.learning import Learning
+from nlpatl.sampling import Sampling
 from nlpatl.storage import Storage
 
 
 class SupervisedLearning(Learning):
-	def __init__(self, embeddings_model: Embeddings,
+	def __init__(self, 
+		sampling: Sampling,
+		embeddings_model: Embeddings,
 		classification_model: Classification,
 		multi_label: bool = False, 
 		name: str = 'classification_learning'):
 
-		super().__init__(multi_label=multi_label, 
+		super().__init__(sampling=sampling,
 			embeddings_model=embeddings_model,
 			classification_model=classification_model,
+			multi_label=multi_label, 
 			name=name)
 
 	def validate(self):
@@ -53,7 +57,10 @@ class SupervisedLearning(Learning):
 		x_features = self.embeddings_model.convert(x)
 		preds = self.classification_model.predict_proba(x_features)
 
-		preds = self.keep_most_valuable(preds, num_sample=num_sample)
+		indices, values = self.sampling.sample(preds.values, num_sample=num_sample)
+		preds.keep(indices)
+		# Replace original probabilies by sampling values
+		preds.values = values
 
 		preds.features = [x[i] for i in preds.indices.tolist()]
 

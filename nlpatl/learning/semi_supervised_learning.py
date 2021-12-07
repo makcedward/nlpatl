@@ -5,10 +5,8 @@ import numpy as np
 from nlpatl.models.classification import Classification
 from nlpatl.models.embeddings import Embeddings
 from nlpatl.learning import Learning
-from nlpatl.sampling import (
-	Sampling,
-	MostConfidenceSampling
-)
+from nlpatl.sampling import Sampling
+from nlpatl.sampling.certainty import MostConfidenceSampling
 from nlpatl.storage import Storage
 
 
@@ -23,12 +21,11 @@ class SemiSupervisedLearning(Learning):
 		name: str = 'semi_supervised_samlping'):
 
 		super().__init__(multi_label=multi_label, 
+			sampling=sampling,
 			embeddings_model=embeddings_model,
 			classification_model=classification_model,
 			name=name)
 
-		# TODO: move to parent class
-		self.sampling = sampling
 		self.self_learn_id = None
 		self.self_learn_x = None
 		self.self_learn_y = None
@@ -71,7 +68,10 @@ class SemiSupervisedLearning(Learning):
 		x_features = self.embeddings_model.convert(x)
 		preds = self.classification_model.predict_proba(x_features)
 
-		preds = self.sampling.sample(preds, num_sample=num_sample)
+		indices, values = self.sampling.sample(preds.values, num_sample=num_sample)
+		preds.keep(indices)
+		# Replace original probabilies by sampling values
+		preds.values = values
 
 		preds.features = [x[i] for i in preds.indices.tolist()]
 
@@ -94,7 +94,10 @@ class SemiSupervisedLearning(Learning):
 
 		most_confidence_sampling = MostConfidenceSampling(
 			threshold=self.self_learn_threshold)
-		preds = most_confidence_sampling.sample(preds, len(preds))
+		indices, values = most_confidence_sampling.sample(preds.values, len(preds))
+		preds.keep(indices)
+		# Replace original probabilies by sampling values
+		preds.values = values
 
 		# NOT original indices. These are filtered indices 
 		indices = preds.indices

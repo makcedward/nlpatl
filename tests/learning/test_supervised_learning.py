@@ -13,14 +13,12 @@ from nlpatl.models.classification import (
 	SkLearnClassification, 
 	XGBoostClassification
 )
-from nlpatl.learning import (
-	EntropyLearning, 
-	SupervisedLearning
-)
+from nlpatl.learning import SupervisedLearning
+from nlpatl.sampling.uncertainty import EntropySampling
 from nlpatl.storage import Storage
 
 
-class TestModelLearningSupervised(unittest.TestCase):
+class TestLearningSupervised(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
 		texts = load_dataset('ag_news')['train']['text']
@@ -41,9 +39,11 @@ class TestModelLearningSupervised(unittest.TestCase):
 				'use_label_encoder': False,
 				'eval_metric': 'logloss'
 			})
+		cls.entropy_sampling = EntropySampling()
 
 	def test_no_model(self):
 		learning = SupervisedLearning(
+			sampling=self.entropy_sampling,
 			embeddings_model=None,
 			classification_model=None
 			)
@@ -61,7 +61,8 @@ class TestModelLearningSupervised(unittest.TestCase):
 			'Does not initialize classification model but still able to run'
 
 	def test_explore_by_sklearn(self):
-		learning = EntropyLearning(
+		learning = SupervisedLearning(
+			sampling=self.entropy_sampling,
 			embeddings_model=self.transformers_embeddings_model,
 			classification_model=self.sklearn_classification_model
 			)
@@ -71,7 +72,8 @@ class TestModelLearningSupervised(unittest.TestCase):
 		assert result, 'No output'
 
 	def test_explore_by_xgboost(self):
-		learning = EntropyLearning(
+		learning = SupervisedLearning(
+			sampling=self.entropy_sampling,
 			embeddings_model=self.transformers_embeddings_model,
 			classification_model=self.xgboost_classification_model
 			)
@@ -86,9 +88,11 @@ class TestModelLearningSupervised(unittest.TestCase):
 			def convert(self, inputs: List[str]) -> np.ndarray:
 				return np.random.rand(len(inputs), 5)
 
-		learning = EntropyLearning(multi_label=True, 
+		learning = SupervisedLearning(
+			sampling=self.entropy_sampling,
 			embeddings_model=CustomEmbeddings(),
-			classification_model=self.sklearn_classification_model
+			classification_model=self.sklearn_classification_model,
+			multi_label=True,
 			)
 
 		learning.learn(self.train_texts, self.train_labels)
@@ -120,9 +124,12 @@ class TestModelLearningSupervised(unittest.TestCase):
 					values=probs,
 					groups=preds.tolist())
 
-		learning = EntropyLearning(multi_label=True, 
+		learning = SupervisedLearning(
+			sampling=self.entropy_sampling,
 			embeddings_model=self.transformers_embeddings_model,
-			classification_model=CustomClassification(model=None))
+			classification_model=CustomClassification(model=None),
+			multi_label=True
+			)
 
 		learning.learn(self.train_texts, self.train_labels)
 
