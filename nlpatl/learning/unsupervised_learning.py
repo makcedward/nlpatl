@@ -8,6 +8,7 @@ from nlpatl.storage import Storage
 
 
 class UnsupervisedLearning(Learning):
+	# https://homepages.tuni.fi/tuomas.virtanen/papers/active-learning-sound.pdf
 	def __init__(self, 
 		sampling: Sampling,
 		embeddings_model: Embeddings = None, 
