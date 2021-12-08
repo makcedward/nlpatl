@@ -1,12 +1,12 @@
-from typing import List
+from typing import List, Union
 import numpy as np
 
 
-class Storage:
-	def __init__(self, values: np.ndarray, indices: [List[int], np.ndarray] = None,
-		features: [List[str], List[float], np.ndarray] = None, 
-		labels: [List[str], List[int]] = None, groups: [List[str], List[int]] = None,
-		name: str ='storage'):
+class Dataset:
+	def __init__(self, values: np.ndarray, indices: Union[List[int], np.ndarray] = None,
+		features: Union[List[str], List[float], np.ndarray] = None, 
+		labels: Union[List[str], List[int]] = None, groups: Union[List[str], List[int]] = None,
+		name: str ='dataset'):
 		self.name = name
 
 		self.features = features
