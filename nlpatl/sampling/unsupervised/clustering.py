@@ -6,7 +6,11 @@ from nlpatl.sampling import Sampling
 
 class ClusteringSampling(Sampling):
 	"""
-		:param str name: Name of this sampling
+		Sampling data points according to the distances of cluster centriod. Picking n cloest
+			data points per number of cluster.
+
+		:param name: Name of this sampling
+		:type name: str
     """
     
 	def __init__(self, name: str = 'clustering_sampling'):

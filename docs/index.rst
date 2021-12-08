@@ -10,6 +10,7 @@ The goal of NLPatl is assisting user to build high quality labeled dataset. It b
 
    ./learning/learning
    ./models/model
+   ./sampling/sampling
 
 See :ref:`modindex` for API.
 

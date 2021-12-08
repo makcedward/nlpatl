@@ -6,10 +6,31 @@ from nlpatl.models.classification import Classification
 from nlpatl.models.embeddings import Embeddings
 from nlpatl.learning import Learning
 from nlpatl.sampling import Sampling
-from nlpatl.storage import Storage
+from nlpatl.dataset import Dataset
 
 
 class SupervisedLearning(Learning):
+	"""
+		| Applying typical active learning apporach to annotate the most valuable data points. Here is the pseudo:
+		|	1. Convert raw data to features (Embeddings model)
+		|	2. Train model and classifing data points (Classification model)
+		|	3. Estmiate the most valuable data points (Sampling)
+		|	4. Subject matter experts annotates the most valuable data points
+		|	5. Repeat Step 2 to 4 until acquire enough data points.
+		
+		:param sampling: Sampling method. Refer to nlpatl.sampling.
+		:type sampling: :class:`nlpatl.sampling.Sampling`
+		:param embeddings_model: Function for converting raw data to embeddings.
+		:type embeddings_model: :class:`nlpatl.models.embeddings.Embeddings`
+		:param classification_model: Function for classifying inputs
+		:type classification_model: :class:`nlpatl.models.classification.Classification`
+		:param multi_label: Indicate the classification model is multi-label or 
+			multi-class (or binary). Default is False.
+		:type multi_label: bool
+		:param name: Name of this learning.
+		:type name: str
+	"""
+
 	def __init__(self, 
 		sampling: Sampling,
 		embeddings_model: Embeddings,
@@ -50,7 +71,7 @@ class SupervisedLearning(Learning):
 		self.classification_model.train(x_features, y)
 
 	def explore(self, x: List[str], return_type: str = 'dict', 
-		num_sample: int = 10) -> List[object]:
+		num_sample: int = 10) -> Union[Dataset, dict]:
 
 		self.validate()
 

@@ -1,7 +1,7 @@
 from typing import List, Union
 import numpy as np
 
-from nlpatl.storage.storage import Storage
+from nlpatl.dataset import Dataset
 
 class Classification:
 	def __init__(self, name: str = 'classification'):
@@ -18,9 +18,15 @@ class Classification:
 		...
 
 	def train(self, x: np.ndarray, 
-		y: [np.ndarray, List[str], List[int], List[List[str]], List[List[int]]]):
+		y: Union[np.ndarray, List[str], List[int], List[List[str]], List[List[int]]]):
+		"""
+			:param x: Raw features
+			:type x: np.ndarray
+			:param y: Label of data inputs
+			:type y: list of string, int or float or :class:`np.ndarray`.
+		"""
 		...
 
-	def predict_proba(self, x, predict_config: dict={}) -> Storage:
+	def predict_proba(self, x: np.ndarray, predict_config: dict={}) -> Dataset:
 		...
 	

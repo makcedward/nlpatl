@@ -13,10 +13,16 @@ from nlpatl.models.embeddings import Embeddings
 
 class SentenceTransformers(Embeddings):
 	"""
-		:param str model_name_or_path: Sentence transformers model or path name
-		:param int batch_size: Batch size of data processing. Default is 16
-		:param dict model_config: Custom model paramateters
-		:param str name: Name of this embeddings
+		A wrapper of transformers class.
+
+		:param model_name_or_path: sentence transformers model name. 
+		:type model_name_or_path: str
+		:param batch_size: Batch size of data processing. Default is 16
+		:type batch_size: int
+		:param model_config: Model paramateters. Refer to https://www.sbert.net/docs/pretrained_models.html
+		:type model_config: dict
+		:param name: Name of this embeddings
+		:type name: str
 
 		>>> import nlpatl.models.embeddings as nme
 		>>> model = nme.SentenceTransformers()
@@ -32,14 +38,6 @@ class SentenceTransformers(Embeddings):
 		self.model.eval()
 
 	def convert(self, x: List[str]) -> np.ndarray:
-		"""
-			:param list x: Raw features
-
-			:return np.ndarray: Embeddings
-			
-			>>> model.convert(x=x)
-		"""
-
 		results = []
 		for i, batch_inputs in enumerate(self.batch(x, self.batch_size)):
 			with torch.no_grad():

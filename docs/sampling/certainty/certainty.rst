@@ -1,5 +1,5 @@
-Certainity Learning
-=====================
+Certainity Sampling
+===================
 
 .. toctree::
    :maxdepth: 6

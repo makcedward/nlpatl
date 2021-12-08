@@ -6,7 +6,11 @@ from nlpatl.sampling import Sampling
 
 class MarginSampling(Sampling):
 	"""
-		:param str name: Name of this sampling
+		Sampling data points according to the margin confidence. Pick the lowest
+			probabilies difference between the highest class and second higest class.
+
+		:param name: Name of this sampling
+		:type name: str
     """
 
 	def __init__(self, name: str = 'margin_sampling'):	

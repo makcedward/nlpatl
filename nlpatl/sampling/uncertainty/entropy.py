@@ -7,7 +7,10 @@ from nlpatl.sampling import Sampling
 
 class EntropySampling(Sampling):
 	"""
-		:param str name: Name of this sampling
+		Sampling data points according to the entropy. Pick the highest N data points
+
+		:param name: Name of this sampling
+		:type name: str
     """
 
 	def __init__(self, name: str = 'entropy_sampling'):

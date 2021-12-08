@@ -1,14 +1,20 @@
 from typing import List
-from nlpatl.storage.storage import Storage
+import numpy as np
+
+from nlpatl.dataset import Dataset
 
 
 class Clustering:
 	def __init__(self, name: str = 'clustering'):
 		self.name = name
 
-	def train(self, inputs: List[float]):
+	def train(self, x: List[float]):
+		"""
+			:param x: Raw features
+			:type x: np.ndarray
+		"""
 		...
 
-	def predict_proba(self, inputs: List[float], 
-		predict_config: dict={}) -> Storage:
+	def predict_proba(self, x: np.ndarray, 
+		predict_config: dict={}) -> Dataset:
 		...

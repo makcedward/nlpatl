@@ -26,7 +26,7 @@ from nlpatl.models.embeddings import (
 	TorchVision
 )
 from nlpatl.sampling import Sampling
-from nlpatl.storage import Storage
+from nlpatl.dataset import Dataset
 
 
 class Learning:
@@ -89,7 +89,14 @@ class Learning:
 				indices = indices.tolist()
 			return [data[i] for i in range(len(data)) if i not in indices]
 
-	def get_learnt_data(self):
+	def get_learn_data(self):
+		"""
+			Get all learn data points 
+
+			:return: Learnt data points
+			:rtype: Tuple of index list of int, x (:class:`numpy.ndarray`) 
+				and y (:class:`numpy.ndarray`) 
+		"""
 		return self.learn_id, self.learn_x, self.learn_y
 
 	def concatenate(self, data):
@@ -100,6 +107,12 @@ class Learning:
 		raise ValueError('Does not support {} data type yet'.format(type(data[0])))
 
 	def get_annotated_data(self):
+		"""
+			Get all annotated data points (given and learnt data points)
+
+			:return: Annotated data of training and learnt data points
+			:rtype: Tuple of x (:class:`numpy.ndarray`) and y (:class:`numpy.ndarray`) 
+		"""
 		x = self.concatenate([d for d in [self.train_x, self.learn_x] if d])
 		y = self.concatenate([d for d in [self.train_y, self.learn_y] if d])
 		return x, y
@@ -122,20 +135,56 @@ class Learning:
 
 	def learn(self, x: [List[str], List[int], List[float], np.ndarray], 
 		y: [List[str], List[int]], include_leart_data: bool = True):
+		"""
+			Train the classification model.
+
+			:param x: Raw data inputs. It can be text, number or numpy.
+			:type x: list of string, int or float or :class:`np.ndarray`.
+			:param y: Label of data inputs
+			:type y: bool
+			:param include_learn_data: Train the model whether including
+				human annotated data and machine learning self annotated data.
+				Default is True.
+			:type include_learn_data: bool
+		"""
 		...
 
-	def explore(self, x: List[str], return_type: str = 'dict', 
-		num_sample: int = 2) -> List[object]:
+	def explore(self, 
+		x: Union[List[str], List[int], List[float], np.ndarray], 
+		return_type: str = 'dict', 
+		num_sample: int = 10) -> Union[Dataset, dict]:
+		"""
+			Estimate the most valuable data points for annotation.
+
+			:param x: Raw data inputs. It can be text, number or numpy (for image).
+			:type x: list of string, int or float or :class:`np.ndarray`
+			:param return_type: Data type of returning object. If `dict` is
+				assigned. Return object is `dict`. Possible values are `dict`
+				and `object`.
+			:type return_type: str
+			:param num_sample: Maximum number of data points for annotation.
+			:type num_sample: int
+
+			:return: The most valuable data points.
+			:rtype: :class:`nlpatl.dataset.Dataset` objects or dict
+		"""
+
 		...	
 
-	def educate(self, _id: Union[str, int], 
-		x: Union[str, int, float, List[float], np.ndarray],
+	def educate(self, index: Union[str, int], 
+		x: Union[str, int, float, np.ndarray],
 		y: Union[str, int, List[str], List[int]]):
 		"""
-			Expect label 1 record only. 
-			_id: id
-			x: List of floar or np.ndarray used for vector
-			y: List is designed for multi-label scenario
+			Annotate data point. Only allowing annotate data point
+			one by one. NOT batch.
+
+			:param index: Index of data point.
+			:type index: int
+			:param x: Raw data input. It can be text, number or numpy (for image).
+			:type x: string, int, float or :class:`np.ndarray`
+			:param y: Label of data point
+			:type y: string, int, list of string (multi-label case)
+				or list or int (multi-label case)
 		"""
 
 		if type(x) in [str, int, float, list]:
@@ -164,13 +213,29 @@ class Learning:
 		self.add_unique_y(y)
 
 		if self.learn_id:
-			self.learn_id.append(_id)
+			self.learn_id.append(index)
 		else:
-			self.learn_id = [_id]
+			self.learn_id = [index]
 
 	def explore_educate_in_notebook(self, 
 		x: [List[str], List[int], List[float], np.ndarray],
 		num_sample: int = 2, data_type: str = 'text'):
+		"""
+			Estimate the most valuable data points for annotation and
+			annotate it in IPython Notebook. Executing `explore` function
+			and `educate` function sequentially.
+
+			:param x: Raw data inputs. It can be text, number or numpy (for image).
+			:type x: list of string, int or float or :class:`np.ndarray`
+			:param return_type: Data type of returning object. If `dict` is
+				assigned. Return object is `dict`. Possible values are `dict`
+				and `object`.
+			:type return_type: str
+			:param num_sample: Maximum number of data points for annotation.
+			:type num_sample: int
+			:param str data_type: Indicate the data format for displying in
+				IPython Notebook. Possible values are `text` and `image`.
+		"""
 
 		assert data_type in self.DATA_TYPES, \
 				'`data_type` should be one of [`{}`] but not `{}`'.format(

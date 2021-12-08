@@ -6,7 +6,11 @@ from nlpatl.sampling import Sampling
 
 class LeastConfidenceSampling(Sampling):
 	"""
-		:param str name: Name of this sampling
+		Sampling data points according to the least confidence. Pick the lowest
+			probabilies for the highest class.
+
+		:param name: Name of this sampling
+		:type name: str
     """
 
 	def __init__(self, name: str = 'least_confidence_sampling'):

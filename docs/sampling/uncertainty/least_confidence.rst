@@ -1,7 +1,7 @@
-nlpatl.learning.uncertainty\.most_confidence
+nlpatl.sampling.uncertainty\.least_confidence
 =============================================
 
-.. automodule:: nlpatl.learning.uncertainty.most_confidence
+.. automodule:: nlpatl.sampling.uncertainty.least_confidence
     :members:
     :inherited-members:
     :show-inheritance:
