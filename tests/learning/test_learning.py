@@ -12,7 +12,7 @@ from nlpatl.learning import (
 )
 from nlpatl.sampling.uncertainty import EntropySampling
 from nlpatl.sampling.unsupervised import ClusteringSampling
-from nlpatl.storage import Storage
+from nlpatl.dataset import Dataset
 
 
 class TestLearning(unittest.TestCase):
@@ -115,5 +115,5 @@ class TestLearning(unittest.TestCase):
 		for i in range(3):
 			learning.educate(i, self.train_texts[i], expected_labels[i])
 
-		learn_indices, learn_x, learn_y = learning.get_learnt_data()
+		learn_indices, learn_x, learn_y = learning.get_learn_data()
 		assert expected_labels == learn_y, 'Unable to learn multi label'

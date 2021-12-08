@@ -14,7 +14,7 @@ from nlpatl.models.clustering import (
 )
 from nlpatl.learning import UnsupervisedLearning
 from nlpatl.sampling.unsupervised import ClusteringSampling
-from nlpatl.storage import Storage
+from nlpatl.dataset import Dataset
 
 
 class TestLearningUnsupervised(unittest.TestCase):
