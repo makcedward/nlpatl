@@ -25,16 +25,25 @@ from nlpatl.models.embeddings.embeddings import Embeddings
 
 class Transformers(Embeddings):
 	"""
-		:param str model_name_or_path: Transformers model or path name
-		:param int batch_size: Batch size of data processing. Default is 16
-		:param bool padding: Inputs may not have same size. Set True to pad it.
+		A wrapper of transformers class.
+
+		:param model_name_or_path: transformers model name. 
+		:type model_name_or_path: str
+		:param batch_size: Batch size of data processing. Default is 16
+		:type batch_size: int
+		:param padding: Inputs may not have same size. Set True to pad it.
 			Default is False
-		:param bool truncation: Inputs may not have same size. Set True to 
+		:type padding: bool
+		:param truncation: Inputs may not have same size. Set True to 
 			truncate it. Default is False
-		:param str nn_fwk: Neual network framework. Either pt (for PyTorch) or
+		:type truncation: bool
+		:param nn_fwk: Neual network framework. Either pt (for PyTorch) or
 			tf (for TensorFlow)
-		:param dict model_config: Custom model paramateters
-		:param str name: Name of this embeddings
+		:type nn_fwk: str
+		:param model_config: Model paramateters. Refer to https://huggingface.co/docs/transformers/index
+		:type model_config: dict
+		:param name: Name of this embeddings
+		:type name: str
 
 		>>> import nlpatl.models.embeddings as nme
 		>>> model = nme.Transformers()
@@ -59,17 +68,9 @@ class Transformers(Embeddings):
 		self.truncation = truncation
 		self.nn_fwk = nn_fwk
 
-	def convert(self, inputs: List[str]) -> np.ndarray:
-		"""
-			:param list x: Raw features
-
-			:return np.ndarray: Embeddings
-			
-			>>> model.convert(x=x)
-		"""
-
+	def convert(self, x: List[str]) -> np.ndarray:
 		results = []
-		for batch_inputs in self.batch(inputs, self.batch_size):
+		for batch_inputs in self.batch(x, self.batch_size):
 			ids = self.tokenizer(
 				batch_inputs, 
 				return_tensors=self.nn_fwk, 

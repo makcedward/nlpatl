@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 from datasets import load_dataset
 import unittest
 import datasets
@@ -15,7 +15,7 @@ from nlpatl.models.classification import (
 )
 from nlpatl.learning import SemiSupervisedLearning
 from nlpatl.sampling.certainty import MostConfidenceSampling
-from nlpatl.storage import Storage
+from nlpatl.dataset import Dataset
 
 
 class TestLearningSemiSupervised(unittest.TestCase):
@@ -112,7 +112,7 @@ class TestLearningSemiSupervised(unittest.TestCase):
 				""" 
 				...
 
-			def predict_proba(self, x, predict_config: dict={}) -> Storage:
+			def predict_proba(self, x, predict_config: dict={}) -> Union[Dataset, object]:
 				"""
 					Do probability prediction here
 					e.g. preds = self.model.predict_prob(x, **predict_config)
@@ -120,7 +120,7 @@ class TestLearningSemiSupervised(unittest.TestCase):
 				probs = np.random.rand(len(x), 3)
 				preds = np.argmax(probs, axis=1)
 
-				return Storage(
+				return Dataset(
 					values=probs,
 					groups=preds.tolist())
 

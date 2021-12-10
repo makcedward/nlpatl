@@ -22,6 +22,7 @@ if __name__ == '__main__':
         'tests/models/embeddings/',
         'tests/models/clustering/',
         'tests/models/classification/',
+        'tests/sampling/',
         'tests/sampling/certainty/',
         'tests/sampling/uncertainty/',
         'tests/sampling/unsupervised/',   
@@ -45,6 +46,8 @@ if __name__ == '__main__':
     # suites.append(unittest.TestLoader().loadTestsFromName('models.classification.test_sklearn_classification'))
 
     # Sampling
+    # suites.append(unittest.TestLoader().loadTestsFromName('sampling.test_sampling'))
+
     # suites.append(unittest.TestLoader().loadTestsFromName('sampling.certainty.test_most_confidence'))
     
     # suites.append(unittest.TestLoader().loadTestsFromName('sampling.uncertainty.test_least_confidence'))

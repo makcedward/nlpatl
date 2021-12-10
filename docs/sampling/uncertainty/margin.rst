@@ -1,7 +1,7 @@
-nlpatl.learning.uncertainty\.margin
+nlpatl.sampling.uncertainty\.margin
 ===================================
 
-.. automodule:: nlpatl.learning.uncertainty.margin
+.. automodule:: nlpatl.sampling.uncertainty.margin
     :members:
     :inherited-members:
     :show-inheritance:

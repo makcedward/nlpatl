@@ -18,7 +18,7 @@ pip install git+https://github.com/makcedward/nlpatl.git
 # Examples
 * [Quick tour for text input](https://colab.research.google.com/drive/1dr1GY_vO_oOMixj4clzcMR7jLsNpbbvg#scrollTo=CRxkM-D76s19)
 * [Quick tour for image input](https://colab.research.google.com/drive/1xBG4ZCw9LTS-UmdBwg4eRnUbd6lo-Dv6?usp=sharing)
-* [Custom Embeddings, Classification and Learning function](https://colab.research.google.com/drive/1IB2OWzgoPCIOjjqhjX9boyK17K3bpgmz?usp=sharing)
+* [Custom Embeddings, Classification, Clustering and Learning function](https://colab.research.google.com/drive/1IB2OWzgoPCIOjjqhjX9boyK17K3bpgmz?usp=sharing)
 
 # Release
 0.0.2dev
@@ -28,7 +28,8 @@ pip install git+https://github.com/makcedward/nlpatl.git
 * [Completed] Custom Embeddings, Classification, Clustering, Scoring(Learning) function
 * [Completed] Support TorchVision for image embeddings
 * [Completed] Support SentenceTransformers
-* [Completed] Added Least Confidence Learning and Most Confidence Learning
+* [Completed] Add Least Confidence Sampling and Most Confidence Sampling
+* [Completed] Add Semi-supervised learning
 
 # Citation
 ```latex

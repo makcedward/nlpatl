@@ -1,10 +1,11 @@
+from typing import Tuple
 import unittest
 import numpy as np
 
-from nlpatl.sampling.uncertainty import EntropySampling
+from nlpatl.sampling import Sampling
 
 
-class TestSamplingEntropy(unittest.TestCase):
+class TestSampling(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
 		cls.data = np.array([
@@ -24,14 +25,17 @@ class TestSamplingEntropy(unittest.TestCase):
 		])
 
 	def test_sample(self):
-		expected_indices = np.array([9, 12, 11])
+		class CustomSampling(Sampling):
+			def sample(self, data: np.ndarray, 
+				num_sample: int) -> Tuple[np.ndarray, np.ndarray]:
 
-		num_sample = 3
-		sampling = EntropySampling()
-	
-		indices, values = sampling.sample(self.data, num_sample=num_sample)
+				return np.array([1, 3, 5][:num_sample]), None
+		expected_indices = np.array([1, 3])
+
+		num_sample = 2
+		sampling = CustomSampling()
+		indices, _ = sampling.sample(self.data, num_sample=num_sample)
 
 		assert indices is not None, 'No output'
-		assert len(indices) == len(values), 'Sample size of return'
 		assert np.array_equal(indices, expected_indices), \
 			'Filtering incorrect result'

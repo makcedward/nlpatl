@@ -6,11 +6,13 @@ from nlpatl.sampling import Sampling
 
 class MostConfidenceSampling(Sampling):
 	"""
-		# https://markcartwright.com/files/wang2019active.pdf
+		Sampling data points if the confidence is higher than threshold. Refer to https://markcartwright.com/files/wang2019active.pdf
 
-		:param float threshold: Minimum probability of model prediction. Default
+		:param threshold: Minimum probability of model prediction. Default
 			value is 0.85
-		:param str name: Name of this sampling
+		:type threshold: float
+		:param name: Name of this sampling
+		:type name: str
     """
 
 	def __init__(self, threshold: float = 0.85,
@@ -22,11 +24,6 @@ class MostConfidenceSampling(Sampling):
 
 	def sample(self, data: np.ndarray, 
 		num_sample: int) -> Tuple[np.ndarray, np.ndarray]:
-
-		"""
-			:param Storage x: processed data
-			:param int num_sample: Total number of sample for labeling
-		"""
 
 		num_node = min(num_sample, len(data))
 

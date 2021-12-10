@@ -6,7 +6,7 @@ from sklearn.cluster import (
 )
 
 from nlpatl.models.clustering.clustering import Clustering
-from nlpatl.storage.storage import Storage
+from nlpatl.dataset import Dataset
 
 MODEL_FOR_SKLEARN_CLUSTERING_MAPPING_NAMES = {
     'kmeans': KMeans,
@@ -15,9 +15,15 @@ MODEL_FOR_SKLEARN_CLUSTERING_MAPPING_NAMES = {
 
 class SkLearnClustering(Clustering):
 	"""
-		:param str model_name: sci-kit learn clustering model name
-		:param dict model_config: Custom model paramateters
-		:param str name: Name of this clustering
+		A wrapper of sci-kit learn clustering class.
+
+		:param model_name: sci-kit learn clustering model name. Possible values
+			are `kmeans`.
+		:type model_name: str
+		:param model_config: Model paramateters. Refer to https://scikit-learn.org/stable/modules/classes.html#module-sklearn.cluster
+		:type model_config: dict
+		:param name: Name of this clustering
+		:type name: str
 
 		>>> import nlpatl.models.clustering as nmclu
 		>>> model = nmclu.SkLearnClustering()
@@ -44,22 +50,19 @@ class SkLearnClustering(Clustering):
 		return MODEL_FOR_SKLEARN_CLUSTERING_MAPPING_NAMES
 
 	def train(self, x: Union[List[float], np.ndarray]):
-		"""
-			:param np.ndarray x: Raw features
-
-			>>> model.train(x=x)
-		"""
-
 		self.model.fit(x)
 
 	def predict_proba(self, x: List[float], 
-		predict_config: dict={}) -> Storage:
+		predict_config: dict={}) -> Dataset:
 
 		"""
-			:param np.ndarray x: Features
-			:param dict predict_config: Custom model prediction paramateters
+			:param x: Raw features
+			:type x: np.ndarray
+			:param predict_config: Model prediction paramateters. Refer to https://scikit-learn.org/stable/modules/classes.html#module-sklearn.cluster
+			:type model_config: dict
 
-			>>> model.predict_proba(x=x)
+			:return: Feature and probabilities
+			:rtype: :class:`nlptatl.dataset.Dataset`
 		"""
 
 		num_cluster = self.model.n_clusters
@@ -82,4 +85,4 @@ class SkLearnClustering(Clustering):
 			
 			start_pos = end_pos
 
-		return Storage(indices=indices, values=values, groups=groups)
+		return Dataset(indices=indices, values=values, groups=groups)

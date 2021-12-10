@@ -6,7 +6,14 @@ class Embeddings:
 		self.batch_size = batch_size
 		self.name = name
 
-	def convert(self, inputs: Union[List[str], List[np.ndarray]]) -> List[float]:
+	def convert(self, x: Union[List[str], List[np.ndarray]]) -> List[float]:
+		"""
+			:param x: Raw features
+			:type x: np.ndarray
+
+			:return: Vectors of features
+			:rtype: :class:`np.ndarray`
+		"""
 		...
 	
 	def batch(self, arr: List, n: int = 1):
