@@ -1,60 +1,33 @@
-from typing import List
 from datasets import load_dataset
 import unittest
-import datasets
-import numpy as np
 
-from nlpatl.models.embeddings import (
-	Embeddings,
-	Transformers
-)
-from nlpatl.models.clustering import (
-	Clustering, 
-	SkLearnClustering
-)
 from nlpatl.learning import UnsupervisedLearning
-from nlpatl.sampling.clustering import NearestSampling
-from nlpatl.dataset import Dataset
-
+	
 
 class TestLearningUnsupervised(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
 		cls.train_texts = load_dataset('ag_news')['train']['text'][:20]
 
-		cls.transformers_embeddings_model = Transformers(
-			'bert-base-uncased', nn_fwk='pt', padding=True, 
-			batch_size=3)
-		cls.sklearn_clustering_model = SkLearnClustering('kmeans')
-		cls.nearest_sampling = NearestSampling()
-
-	def test_no_model(self):
-		learning = UnsupervisedLearning(
-			sampling=self.nearest_sampling
+		cls.learning = UnsupervisedLearning(
+			sampling='nearest_mean',
+			embeddings='bert-base-uncased', embeddings_type='transformers',
+			embeddings_model_config={'nn_fwk': 'pt', 'padding': True, 'batch_size':8},
+			clustering='kmeans',
+			multi_label=False, 
 			)
 
-		with self.assertRaises(Exception) as error:
-			learning.explore(self.train_texts)
-		assert 'Embeddings model does not initialize yet' in str(error.exception), \
-			'Does not initialize embeddings model but still able to run'
+	def tearDown(self):
+		self.learning.clear_learn_data()
 
-		learning.embeddings_model = self.transformers_embeddings_model
-		with self.assertRaises(Exception) as error:
-			learning.explore(self.train_texts)
-		assert 'Clustering model does not initialize yet' in str(error.exception), \
-			'Does not initialize clustering model but still able to run'
+	def test_explore(self):
+		result = self.learning.explore(self.train_texts)
 
-	def test_custom_embeddings_model(self):
-		class CustomEmbeddings(Embeddings):
-			def convert(self, inputs: List[str]) -> np.ndarray:
-				return np.random.rand(len(inputs), 5)
+		assert not self.learning.learn_x, 'Learnt something at the beginning'
 
-		learning = UnsupervisedLearning(
-			sampling=self.nearest_sampling,
-			embeddings_model=CustomEmbeddings(),
-			clustering_model=self.sklearn_clustering_model,
-			multi_label=True, 
-			)
-		learning.explore(self.train_texts)
+		for index, feature, group in zip(
+			result['indices'], result['features'], result['groups']):
 
-		assert True, 'Unable to apply custom embeddings model'
+			self.learning.educate(index, feature, group)
+
+		assert self.learning.learn_x, 'Unable to explore'

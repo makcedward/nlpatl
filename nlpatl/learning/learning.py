@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Callable, Optional
 import numpy as np
 
 try:
@@ -12,31 +12,59 @@ except ImportError:
 	# No installation required if not using this function
 	pass
 
-from nlpatl.models.clustering import (
-	Clustering,
-	SkLearnClustering
-)
-from nlpatl.models.classification import (
-	Classification,
-	SkLearnClassification
-)
-from nlpatl.models.embeddings import (
-	Embeddings,
-	Transformers,
-	TorchVision
-)
+from nlpatl.models.clustering import Clustering
+from nlpatl.models.classification import Classification
+from nlpatl.models.embeddings import Embeddings
 from nlpatl.sampling import Sampling
 from nlpatl.dataset import Dataset
+
+import nlpatl.sampling.certainty as nscer
+import nlpatl.sampling.uncertainty as nsunc
+import nlpatl.sampling.clustering as nsclu
+
+import nlpatl.models.embeddings as nme
+import nlpatl.models.clustering as nmclu
+import nlpatl.models.classification as nmcla
+
+SAMPLING_FOR_ALL_MAPPING_NAMES = {
+	'most_confidence': nscer.MostConfidenceSampling(),
+	'entropy': nsunc.EntropySampling(),
+	'least_confidence': nsunc.LeastConfidenceSampling(),
+	'margin': nsunc.MarginSampling(),
+	'nearest_mean': nsclu.NearestMeanSampling(),
+	'fathest': nsclu.FarthestSampling()
+}
+
+EMBEDDINGS_MODEL_FOR_ALL_MAPPING_NAMES = {
+	'sentence_transformers': nme.SentenceTransformers,
+	'transformers': nme.Transformers,
+	'torch_vision': nme.TorchVision	
+}
+
+CLUSTERING_MODEL_FOR_ALL_MAPPING_NAMES = {
+	'kmeans': nmclu.SkLearnClustering
+}
+
+CLASSIFICATION_MODEL_FOR_ALL_MAPPING_NAMES = {
+	'logistic_regression': nmcla.SkLearnClassification,
+	'svc': nmcla.SkLearnClassification,
+	'linear_svc': nmcla.SkLearnClassification,
+	'random_forest': nmcla.SkLearnClassification,
+	'xgboost': nmcla.XGBoostClassification
+}
 
 
 class Learning:
 	RETURN_TYPES = ['dict', 'object']
 	DATA_TYPES = ['text', 'image', 'audio']
 
-	def __init__(self, sampling: Sampling,
-		embeddings_model: Embeddings = None, 
-		clustering_model: Clustering = None, 
-		classification_model: Classification = None, 
+	def __init__(self, sampling: Union[str, Callable] = None,
+		embeddings: Union[str, Embeddings] = None, embeddings_type: str = '',
+		clustering: Optional[Union[str, Clustering]] = None,
+		classification: Optional[Union[str, Classification]] = None, 
+		embeddings_model_config: Optional[dict] = None,
+		clustering_model_config: Optional[dict] = None,
+		classification_model_config: Optional[dict] = None,
 		multi_label: bool = False, 
 		name: str = 'learning'):
 
@@ -48,10 +76,22 @@ class Learning:
 		self.learn_x = None
 		self.learn_y = None
 		self.unique_y = set()
-		self.sampling = sampling
-		self.embeddings_model = embeddings_model
-		self.clustering_model = clustering_model
-		self.classification_model = classification_model
+
+		self.sampling = self.init_sampling(sampling) if sampling else None
+
+		self.embeddings_model_config = embeddings_model_config
+		self.embeddings_name, self.embeddings_model = self.init_embeddings(
+			embeddings, embeddings_type, embeddings_model_config)
+
+		if classification:
+			self.classification_model_config = classification_model_config
+			self.classification_name, self.classification_model = self.init_classification_model(
+				classification, classification_model_config)
+		
+		if clustering:
+			self.clustering_model_config = clustering_model_config
+			self.clustering_name, self.clustering_model = self.init_clustering_model(
+				clustering, clustering_model_config)
 
 	def validate(self, targets: List[str] = None):
 		if not targets:
@@ -76,6 +116,93 @@ class Learning:
 			return d.__dict__
 		elif return_type == 'object':
 			return d
+
+	def get_sampling_mapping(self):
+		return SAMPLING_FOR_ALL_MAPPING_NAMES
+
+	def get_embeddings_mapping(self):
+		return EMBEDDINGS_MODEL_FOR_ALL_MAPPING_NAMES
+
+	def get_clustering_mapping(self):
+		return CLUSTERING_MODEL_FOR_ALL_MAPPING_NAMES
+
+	def get_classification_mapping(self):
+		return CLASSIFICATION_MODEL_FOR_ALL_MAPPING_NAMES
+
+	def init_sampling(self, sampling):
+		if type(sampling) is str:
+			mapping = self.get_sampling_mapping()
+			sampling_func = mapping.get(sampling, None)
+			if not sampling_func:
+				raise ValueError('`{}` does not support. Supporting {} only'.format(
+					sampling, '`' + '`, `'.join(
+						mapping.keys()) + '`'))
+
+			return sampling_func.sample
+		elif hasattr(sampling, '__call__'):
+			return sampling
+		else:
+			raise ValueError('`{}` does not support. Supporting str or function only'.format(
+				sampling))
+
+	def init_embeddings(self, embeddings, embeddings_type, embeddings_model_config):
+		if type(embeddings) is str:
+			mapping = self.get_embeddings_mapping()
+			name = embeddings
+			model = mapping.get(embeddings_type, None)
+
+			if model:
+				model = model(embeddings, **embeddings_model_config)
+
+			else:
+				raise ValueError('`{}` does not support. Supporting {} only'.format(
+					sampling, '`' + '`, `'.join(mapping.keys()) + '`'))
+		elif isinstance(embeddings, Embeddings):
+			name = 'custom'
+			model = embeddings
+		else:
+			raise ValueError('`{}` does not support. Supporting str or ' \
+				'`nlpatl.models.embeddings` only'.format(sampling))
+
+		return name, model
+
+	def init_classification_model(self, name=None, model_config=None):
+		return self.build_model(
+			name or self.classification_name,
+			self.get_classification_mapping(),
+			model_config, 
+			self.classification_model_config)
+
+	def init_clustering_model(self, name=None, model_config=None):
+		return self.build_model(
+			name or self.clustering_name,
+			self.get_clustering_mapping(),
+			model_config, 
+			self.clustering_model_config)
+
+	def build_model(self, name_or_model, possible_models, model_config, default_model_config):
+		if type(name_or_model) is str:
+			name = name_or_model
+			if name in possible_models:
+				if model_config:
+					for k,v in default_model_config.items():
+						if k not in model_config:
+							model_config[k] = v
+				else:
+					model_config = default_model_config or {}
+
+				model = possible_models[name](model_config=model_config)
+			else:
+				raise ValueError('`{}` does not support. Supporting {} only'.format(
+					name, '`' + '`'.join(
+						possible_models.keys()) + '`'))
+		# TODO: support function
+		# TODO: check object
+		else:
+			name = 'custom'
+			model = name_or_model
+
+		return name, model
 
 	def filter(self, data: Union[List[str], List[float], np.ndarray], 
 		indices: np.ndarray) -> Union[List[str], List[float], np.ndarray]:

@@ -1,6 +1,5 @@
 from datasets import load_dataset
 import unittest
-import datasets
 import numpy as np
 
 from nlpatl.learning import MismatchFarthestLearning
@@ -17,7 +16,7 @@ class TestLearningMismatchFarthest(unittest.TestCase):
 		cls.test_labels = labels[0:10] + labels[200:210]
 
 		cls.learning = MismatchFarthestLearning(
-			clustering_sampling='nearest',
+			clustering_sampling='nearest_mean',
 			embeddings='bert-base-uncased', embeddings_type='transformers',
 			embeddings_model_config={'nn_fwk': 'pt', 'padding': True, 'batch_size':8},
 			clustering='kmeans', clustering_model_config={'n_clusters': 3},
@@ -27,13 +26,14 @@ class TestLearningMismatchFarthest(unittest.TestCase):
 		cls.train_features = cls.learning.embeddings_model.convert(cls.train_texts)
 		# cls.test_features = cls.learning.embeddings_model.convert(cls.test_texts)
 
+	def tearDown(self):
+		self.learning.clear_learn_data()
+
 	def test_explore_first_stage(self):
 		result = self.learning.explore_first_stage(self.train_features)
 
 		assert result, 'No result return'
 		assert len(result.indices) > 0, 'Empty result'
-
-		self.learning.clear_learn_data()
 
 	def test_explore_second_stage(self):
 		learn_indices  = np.array([1, 3, 5])
@@ -45,5 +45,3 @@ class TestLearningMismatchFarthest(unittest.TestCase):
 
 		assert result, 'No result return'
 		assert len(result.indices) > 0, 'Empty result'
-
-		self.learning.clear_learn_data()
