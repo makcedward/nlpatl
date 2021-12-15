@@ -1,10 +1,10 @@
 import unittest
 import numpy as np
 
-from nlpatl.sampling.unsupervised import ClusteringSampling
+from nlpatl.sampling.clustering import FarthestSampling
 
 
-class TestSamplingClustering(unittest.TestCase):
+class TestSamplingFarthest(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
 		cls.data = np.array([
@@ -17,10 +17,10 @@ class TestSamplingClustering(unittest.TestCase):
 		)
 
 	def test_sample(self):
-		expected_indices = np.array([0, 6, 9, 13])
+		expected_indices = np.array([2, 8, 9, 12])
 
 		num_sample = 1
-		sampling = ClusteringSampling()
+		sampling = FarthestSampling()
 		indices, _ = sampling.sample(
 			self.data, self.groups, num_sample=num_sample)
 
