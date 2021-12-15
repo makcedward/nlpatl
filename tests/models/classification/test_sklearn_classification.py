@@ -53,12 +53,6 @@ class TestModelClassificationSkLearn(unittest.TestCase):
 		assert type(classification.model) is sklearn.ensemble._forest.RandomForestClassifier, \
 			'Unable to initialize Random Forest Classifier'
 
-		model_config = {}
-		classification = XGBoostClassification('xgboost', 
-			model_config=model_config)
-		assert type(classification.model) is xgboost.sklearn.XGBClassifier, \
-			'Unable to initialize XGBoost'
-
 	def test_classify(self):
 		classification = SkLearnClassification('logistic_regression')
 		classification.train(self.train_features, self.train_labels)

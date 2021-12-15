@@ -47,5 +47,5 @@ class XGBoostClassification(SkLearnClassification):
 			:return: Feature and probabilities
 			:rtype: :class:`nlptatl.dataset.Dataset`
 		"""
-		super().predict_proba(x=x, predict_config=predict_config)
+		return super().predict_proba(x=x, predict_config=predict_config)
 		
