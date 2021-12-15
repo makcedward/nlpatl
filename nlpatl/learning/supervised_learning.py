@@ -36,7 +36,7 @@ class SupervisedLearning(Learning):
 		embeddings_model: Embeddings,
 		classification_model: Classification,
 		multi_label: bool = False, 
-		name: str = 'classification_learning'):
+		name: str = 'supervised_learning'):
 
 		super().__init__(sampling=sampling,
 			embeddings_model=embeddings_model,
@@ -55,6 +55,7 @@ class SupervisedLearning(Learning):
 		self.train_x = x
 		self.train_y = y
 
+		# TODO: cache features
 		if include_leart_data and self.learn_x is not None:
 			if type(x) is np.ndarray and type(self.learn_x) is ndarray:
 				x_features = self.embeddings_model.convert(
@@ -66,8 +67,8 @@ class SupervisedLearning(Learning):
 			y += self.learn_y
 		else:
 			x_features = self.embeddings_model.convert(x)
-
 		self.init_unique_y(y)
+		
 		self.classification_model.train(x_features, y)
 
 	def explore(self, x: List[str], return_type: str = 'dict', 

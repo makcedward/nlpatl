@@ -11,7 +11,7 @@ from nlpatl.learning import (
 	UnsupervisedLearning
 )
 from nlpatl.sampling.uncertainty import EntropySampling
-from nlpatl.sampling.unsupervised import ClusteringSampling
+from nlpatl.sampling.clustering import NearestSampling
 from nlpatl.dataset import Dataset
 
 
@@ -33,11 +33,11 @@ class TestLearning(unittest.TestCase):
 			'logistic_regression',
 			model_config={'max_iter': 500})
 		cls.entropy_sampling = EntropySampling()
-		cls.clustering_sampling = ClusteringSampling()
+		cls.nearest_sampling = NearestSampling()
 
 	def test_unsupervised_explore(self):
 		learning = UnsupervisedLearning(
-			sampling=self.clustering_sampling,
+			sampling=self.nearest_sampling,
 			embeddings_model=self.transformers_embeddings_model, 
 			clustering_model=self.sklearn_clustering_model)
 
@@ -83,7 +83,7 @@ class TestLearning(unittest.TestCase):
 
 	def test_return_type(self):
 		learning = UnsupervisedLearning(
-			sampling=self.clustering_sampling,
+			sampling=self.nearest_sampling,
 			embeddings_model=self.transformers_embeddings_model, 
 			clustering_model=self.sklearn_clustering_model)
 		result = learning.explore(self.train_texts, return_type='object')

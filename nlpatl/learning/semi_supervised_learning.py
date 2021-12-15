@@ -44,7 +44,7 @@ class SemiSupervisedLearning(Learning):
 		classification_model: Classification = None, 
 		multi_label: bool = False,
 		self_learn_threshold: float = 0.9,
-		name: str = 'semi_supervised_samlping'):
+		name: str = 'semi_supervised_learning'):
 
 		super().__init__(multi_label=multi_label, 
 			sampling=sampling,
@@ -87,14 +87,14 @@ class SemiSupervisedLearning(Learning):
 			self.train_x = x
 		if y:
 			self.train_y = y
-
-		# TODO: cache features
+		
 		if include_learn_data:
 			x, y = self.get_annotated_data()
-
-		x_features = self.embeddings_model.convert(x)
-
 		self.init_unique_y(y)
+
+		# TODO: cache features
+		x_features = self.embeddings_model.convert(x)
+		
 		self.classification_model.train(x_features, y)
 
 	def explore(self, 

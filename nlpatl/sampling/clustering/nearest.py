@@ -4,16 +4,16 @@ import numpy as np
 from nlpatl.sampling import Sampling
 
 
-class ClusteringSampling(Sampling):
+class NearestSampling(Sampling):
 	"""
-		Sampling data points according to the distances of cluster centriod. Picking n cloest
-			data points per number of cluster.
+		Sampling data points according to the distances of cluster centriod. Picking n
+			nearest data points per number of cluster.
 
 		:param name: Name of this sampling
 		:type name: str
     """
     
-	def __init__(self, name: str = 'clustering_sampling'):
+	def __init__(self, name: str = 'nearest_sampling'):
 		super().__init__(name=name)
 
 	def sample(self, data: np.ndarray, groups: np.ndarray,

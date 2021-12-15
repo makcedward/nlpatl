@@ -6,4 +6,4 @@ Sampling
 
     ./certainty/certainty
     ./uncertainty/uncertainty
-    ./unsupervised/unsupervised
+    ./clustering/clustering
