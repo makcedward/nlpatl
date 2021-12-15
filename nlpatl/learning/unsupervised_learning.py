@@ -36,7 +36,7 @@ class UnsupervisedLearning(Learning):
 		embeddings_model: Embeddings = None, 
 		clustering_model: Clustering = None, 
 		multi_label: bool = False, 
-		name: str = 'unsupervised_samlping'):
+		name: str = 'unsupervised_learning'):
 
 		super().__init__(sampling=sampling,
 			embeddings_model=embeddings_model,
