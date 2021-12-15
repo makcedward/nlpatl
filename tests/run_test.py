@@ -25,7 +25,7 @@ if __name__ == '__main__':
         'tests/sampling/',
         'tests/sampling/certainty/',
         'tests/sampling/uncertainty/',
-        'tests/sampling/unsupervised/',   
+        'tests/sampling/clustering/',
     ]
     for test_dir in test_dirs:
        loader = unittest.TestLoader()
@@ -44,20 +44,24 @@ if __name__ == '__main__':
 
     # Classification
     # suites.append(unittest.TestLoader().loadTestsFromName('models.classification.test_sklearn_classification'))
+    # suites.append(unittest.TestLoader().loadTestsFromName('models.classification.test_xgboost_classification'))
 
     # Sampling
     # suites.append(unittest.TestLoader().loadTestsFromName('sampling.test_sampling'))
 
     # suites.append(unittest.TestLoader().loadTestsFromName('sampling.certainty.test_most_confidence'))
     
+    # suites.append(unittest.TestLoader().loadTestsFromName('sampling.uncertainty.test_entropy'))
     # suites.append(unittest.TestLoader().loadTestsFromName('sampling.uncertainty.test_least_confidence'))
     # suites.append(unittest.TestLoader().loadTestsFromName('sampling.uncertainty.test_margin'))
-    # suites.append(unittest.TestLoader().loadTestsFromName('sampling.uncertainty.test_entropy'))
-
-    # suites.append(unittest.TestLoader().loadTestsFromName('sampling.unsupervised.test_clustering'))
+    # suites.append(unittest.TestLoader().loadTestsFromName('sampling.uncertainty.test_mismatch'))
+    
+    # suites.append(unittest.TestLoader().loadTestsFromName('sampling.clustering.test_nearest_mean'))
+    # suites.append(unittest.TestLoader().loadTestsFromName('sampling.clustering.test_farthest'))
 
     # Labeling
     # suites.append(unittest.TestLoader().loadTestsFromName('learning.test_learning'))
+    # suites.append(unittest.TestLoader().loadTestsFromName('learning.test_mismatch_farthest_learning'))
     # suites.append(unittest.TestLoader().loadTestsFromName('learning.test_semi_supervised_learning'))
     # suites.append(unittest.TestLoader().loadTestsFromName('learning.test_supervised_learning'))
     # suites.append(unittest.TestLoader().loadTestsFromName('learning.test_unsupervised_learning'))

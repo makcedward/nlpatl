@@ -2,63 +2,22 @@ from typing import List, Union, Callable, Optional
 from collections import defaultdict
 import numpy as np
 
-from nlpatl.models.clustering import (
-	Clustering, SkLearnClustering
-)
-from nlpatl.models.classification import (
-	Classification,
-	SkLearnClassification,
-	XGBoostClassification
-)
-from nlpatl.models.embeddings import (
-	Embeddings,
-	SentenceTransformers,
-	Transformers,
-	TorchVision
-)
-
+from nlpatl.dataset import Dataset
 from nlpatl.learning import Learning
 from nlpatl.sampling import Sampling
-from nlpatl.sampling.certainty import (
-	MostConfidenceSampling
-)
-from nlpatl.sampling.uncertainty import (
-	EntropySampling,
-	LeastConfidenceSampling,
-	MarginSampling,
-	MismatchSampling
-)
-from nlpatl.sampling.clustering import (
-	NearestSampling,
-	FarthestSampling
-)
-from nlpatl.dataset import Dataset
+
+import nlpatl.models.embeddings as nme
+import nlpatl.models.clustering as nmclu
+import nlpatl.models.classification as nmcla
+import nlpatl.sampling.uncertainty as nsunc
+import nlpatl.sampling.clustering as nsclu
 
 CLUSTERING_MODEL_FOR_MISMATCH_FARTHEST_MAPPING_NAMES = {
-	'kmeans': SkLearnClustering
-}
-
-CLASSIFICATION_MODEL_FOR_MISMATCH_FARTHEST_MAPPING_NAMES = {
-	'logistic_regression': SkLearnClassification,
-	'svc': SkLearnClassification,
-	'linear_svc': SkLearnClassification,
-	'random_forest': SkLearnClassification,
-	'xgboost': XGBoostClassification
-}
-
-EMBEDDINGS_MODEL_FOR_MISMATCH_FARTHEST_MAPPING_NAMES = {
-	'sentence_transformers': SentenceTransformers,
-	'transformers': Transformers,
-	'torch_vision': TorchVision	
+	'kmeans': nmclu.SkLearnClustering
 }
 
 SAMPLING_FOR_MISMATCH_FARTHEST_MAPPING_NAMES = {
-	'most_confidence': MostConfidenceSampling(),
-	'entropy': EntropySampling(),
-	'least_confidence': LeastConfidenceSampling(),
-	'margin': MarginSampling(),
-	'nearest': NearestSampling(),
-	'fathest': FarthestSampling()
+	'nearest_mean': nsclu.NearestMeanSampling(),
 }
 
 
@@ -75,142 +34,79 @@ class MismatchFarthestLearning(Learning):
 		|	5. [NLPatl] Train classification model (Classification model)
 		|	6. [NLPatl] Classify unlabeled data points and comparing the clustering model result
 			according to the farthest mismatch data points
-		|	7. Repeat Step 2 to 6 until acquire enough data points.
+		|	7. [Human] Subject matter exepknrnts annotates the most valuable data points
+		|	8. Repeat Step 2 to 7 until acquire enough data points or reach other
+			exit criteria.
 		
-		:param sampling: Sampling method. Refer to nlpatl.sampling.
-		:type sampling: :class:`nlpatl.sampling.Sampling`
-		:param embeddings_model: Function for converting raw data to embeddings.
-		:type embeddings_model: :class:`nlpatl.models.embeddings.Embeddings`
-		:param classification_model: Function for classifying inputs
-		:type classification_model: :class:`nlpatl.models.classification.Classification`
+		:param clustering_sampling: Clustering sampling method for stage 1 exploration. 
+			Providing certified methods name (`nearest_mean`) or custom function.
+		:type clustering_sampling: str or function
+		:param embeddings: Function for converting raw data to embeddings. Providing 
+			model name according to embeddings type. For example, `multi-qa-MiniLM-L6-cos-v1`
+			for `sentence_transformers`. bert-base-uncased` for
+			`transformers`. `vgg16` for `torch_vision`.
+		:type embeddings: str or :class:`nlpatl.models.embeddings.Embeddings`
+		:param embeddings_model_config: Configuration for embeddings models. Optional. Ignored
+			if using custom embeddings class
+		:type embeddings_model_config: dict
+		:param embeddings_type: Type of embeddings. `sentence_transformers` for text, 
+			`transformers` for text or `torch_vision` for image
+		:type embeddings_type: str
+		:param clustering: Function for clustering inputs. Either providing
+			certified methods (`kmeans`) or custom function.
+		:type clustering: str or :class:`nlpatl.models.clustering.Clustering`
+		:param clustering_model_config: Configuration for clustering models. Optional. Ignored
+			if using custom clustering class
+		:type clustering_model_config: dict
+		:param classification: Function for classifying inputs. Either providing
+			certified methods (`logistic_regression`, `svc`, `linear_svc`, `random_forest`
+			and `xgboost`) or custom function.
+		:type classification: :class:`nlpatl.models.classification.Classification`
+		:param classification_model_config: Configuration for classification models. Optional.
+			Ignored if using custom classification class
+		:type classification_model_config: dict
 		:param multi_label: Indicate the classification model is multi-label or 
 			multi-class (or binary). Default is False.
 		:type multi_label: bool
-		:param self_learn_threshold: The minimum threshold for classifying probabilities. Data
-			will be labeled automatically if probability is higher than this value. Default is 0.9
-		:type self_learn_threshold: float
 		:param name: Name of this learning.
 		:type name: str
 	"""
 
-	def __init__(self, clustering_sampling: Union[str, Sampling, Callable],
-		embeddings: Embeddings, embeddings_type: str,
-		classification: Union[str, Classification], 
-		clustering: Union[str, Clustering],
+	def __init__(self, clustering_sampling: Union[str, Callable],
+		embeddings: Union[str, nme.Embeddings], 
+		clustering: Union[str, nmclu.Clustering],
+		classification: Union[str, nmcla.Classification], 
+		embeddings_type: Optional[str] = None,
 		embeddings_model_config: Optional[dict] = None,
-		classification_model_config: Optional[dict] = None,
 		clustering_model_config: Optional[dict] = None,
+		classification_model_config: Optional[dict] = None,
 		multi_label: bool = False,
 		name: str = 'mismatch_farthest_learning'):
 
-		super().__init__(sampling=None, multi_label=multi_label, name=name)
+		super().__init__(
+			embeddings=embeddings, embeddings_type=embeddings_type,
+			embeddings_model_config=embeddings_model_config,
+			clustering=clustering, 
+			clustering_model_config=clustering_model_config,
+			classification=classification, 
+			classification_model_config=classification_model_config,
+			multi_label=multi_label, name=name)
 
 		self.clustering_sampling = self.init_sampling(clustering_sampling)
+		self.mismatch_sampling = nsunc.MismatchSampling().sample
+		self.farthest_sampling = nsclu.FarthestSampling().sample
 
-		self.embeddings_model_config = embeddings_model_config
-		self.embeddings_name, self.embeddings_model = self.init_embeddings(
-			embeddings, embeddings_type, embeddings_model_config
-			)
+	def get_sampling_mapping(self):
+		return SAMPLING_FOR_MISMATCH_FARTHEST_MAPPING_NAMES
 
-		self.classification_model_config = classification_model_config
-		self.classification_name, self.classification_model = self.build_classification_model(
-			classification, 
-			classification_model_config
-			)
-		
-		self.clustering_model_config = clustering_model_config
-		self.clustering_name, self.clustering_model = self.build_clustering_model(
-			clustering, 
-			clustering_model_config
-			)
-
-		self.mismatch_sampling = MismatchSampling()
-		self.farthest_sampling = FarthestSampling()
-
-	def init_sampling(self, sampling):
-		if type(sampling) is str:
-			sampling_func = \
-				SAMPLING_FOR_MISMATCH_FARTHEST_MAPPING_NAMES.get(
-					sampling, None)
-			if not sampling_func:
-				raise ValueError('`{}` does not support. Supporting {} only'.format(
-					sampling, '`' + '`, `'.join(
-						SAMPLING_FOR_MISMATCH_FARTHEST_MAPPING_NAMES.keys()) + '`'))
-
-			return sampling_func.sample
-
-		elif hasattr(sampling, '__call__'):
-			return sampling
-		else:
-			raise ValueError('`{}` does not support. Supporting str or function only'.format(
-				sampling))
-
-	def init_embeddings(self, embeddings, embeddings_type, embeddings_model_config):
-		if type(embeddings) is str:
-			name = embeddings
-			model = \
-				EMBEDDINGS_MODEL_FOR_MISMATCH_FARTHEST_MAPPING_NAMES.get(
-					embeddings_type, None)
-
-			if model:
-				model = model(embeddings, **embeddings_model_config)
-
-			else:
-				raise ValueError('`{}` does not support. Supporting {} only'.format(
-					sampling, '`' + '`, `'.join(
-						EMBEDDINGS_MODEL_FOR_MISMATCH_FARTHEST_MAPPING_NAMES.keys()) + '`'))
-
-		# TODO: support function
-		return name, model
-
-	def build_classification_model(self, name=None, model_config=None):
-		if not name:
-			name = self.classification_name
-		if not model_config:
-			model_config = self.classification_model_config or {}
-
-		return self.build_model(
-			name, 
-			CLASSIFICATION_MODEL_FOR_MISMATCH_FARTHEST_MAPPING_NAMES, 
-			model_config)
-
-	def build_clustering_model(self, name=None, model_config=None):
-		if not name:
-			name = self.clustering_name
-		if model_config:
-			for k,v in self.clustering_model_config.items():
-				if k not in model_config:
-					model_config[k] = v
-		else:
-			model_config = self.clustering_model_config or {}
-
-		return self.build_model(
-			name, 
-			CLUSTERING_MODEL_FOR_MISMATCH_FARTHEST_MAPPING_NAMES, 
-			model_config)
-
-	def build_model(self, name_or_model, possible_models, model_config):
-		if type(name_or_model) is str:
-			name = name_or_model
-			if name in possible_models:
-				model = possible_models[name](model_config=model_config)
-			else:
-				raise ValueError('`{}` does not support. Supporting {} only'.format(
-					name, '`' + '`'.join(
-						possible_models.keys()) + '`'))
-		# TODO: support function
-		# TODO: check object
-		else:
-			name = 'custom'
-			model = name_or_model
-
-		return name, model
+	def get_clustering_mapping(self):
+		return CLUSTERING_MODEL_FOR_MISMATCH_FARTHEST_MAPPING_NAMES
 
 	def validate(self):
 		super().validate(['embeddings', 'clustering', 'classification'])
 
 	def learn_clustering(self, x: np.ndarray, model_config: dict):
-		_, self.clustering_model = self.build_clustering_model(
+		_, self.clustering_model = self.init_clustering_model(
 			model_config=model_config
 			)
 
@@ -242,7 +138,7 @@ class MismatchFarthestLearning(Learning):
 		self.clustering_model.train(x)
 		preds = self.clustering_model.predict_proba(x)
 		
-		indices, values = self.clustering_sampling.sample(
+		indices, values = self.clustering_sampling(
 			preds.values, preds.groups, num_sample=1)
 		preds.keep(indices)
 		# Replace original probabilies by sampling values
@@ -252,13 +148,14 @@ class MismatchFarthestLearning(Learning):
 
 	def explore_second_stage(self, x: np.ndarray, num_sample: int = 2):
 		# Get annotated dataset
-		learn_ids, learn_x, learn_y = self.get_learn_data()
+		learn_indices, learn_x, learn_y = self.get_learn_data()
 		encoded_learn_y, learn_y_decoder, unique_y_encoder = self.build_seq_encoder(
 			learn_y)
+		# TODO: cache
 		learn_x_features = self.embeddings_model.convert(learn_x)
 		
 		# Build unannotated dataset
-		keep_indices = [_ for _ in range(len(x)) if _ not in learn_ids]
+		keep_indices = [_ for _ in range(len(x)) if _ not in learn_indices]
 		unannotated_x_features = x[keep_indices]
 		
 		# Train clustering
@@ -280,14 +177,14 @@ class MismatchFarthestLearning(Learning):
 		classification_preds = [self.classification_model.label_decoder[y] for y in preds]
 
 		# Find mismatch
-		mismatch_indices = self.mismatch_sampling.sample(
+		mismatch_indices = self.mismatch_sampling(
 			clustering_preds, classification_preds, num_sample=len(clustering_preds))
 
 		new_groups = np.array([unique_y_encoder[learn_y_decoder[g]][0] for g in clustering_predictions.groups])
 		new_groups = new_groups[mismatch_indices].flatten()
 		new_values = clustering_predictions.values[mismatch_indices].flatten()
 
-		positions, values = self.farthest_sampling.sample(new_values, new_groups, num_sample)
+		positions, values = self.farthest_sampling(new_values, new_groups, num_sample)
 		clustering_predictions.keep(positions)
 
 		return clustering_predictions

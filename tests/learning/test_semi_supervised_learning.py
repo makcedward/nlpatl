@@ -1,20 +1,15 @@
 from typing import List, Union
 from datasets import load_dataset
 import unittest
-import datasets
 import numpy as np
 
-from nlpatl.models.embeddings import (
-	Embeddings, 
-	Transformers
-)
+from nlpatl.models.embeddings import Transformers
 from nlpatl.models.classification import (
 	Classification, 
 	SkLearnClassification, 
 	XGBoostClassification
 )
 from nlpatl.learning import SemiSupervisedLearning
-from nlpatl.sampling.certainty import MostConfidenceSampling
 from nlpatl.dataset import Dataset
 
 
@@ -39,32 +34,12 @@ class TestLearningSemiSupervised(unittest.TestCase):
 				'use_label_encoder': False,
 				'eval_metric': 'logloss'
 			})
-		cls.most_confidence_sampling = MostConfidenceSampling(threshold=0.85)
-
-	def test_no_model(self):
-		learning = SemiSupervisedLearning(
-			sampling=self.most_confidence_sampling,
-			embeddings_model=None,
-			classification_model=None
-			)
-
-		with self.assertRaises(Exception) as error:
-			learning.explore(self.train_texts, self.train_labels, self.test_texts)
-		assert 'Embeddings model does not initialize yet' in str(error.exception), \
-			'Does not initialize embeddings model but still able to run'
-
-		learning.embeddings_model = self.transformers_embeddings_model
-
-		with self.assertRaises(Exception) as error:
-			learning.explore(self.train_texts, self.train_labels, self.test_texts)
-		assert 'Classification model does not initialize yet' in str(error.exception), \
-			'Does not initialize classification model but still able to run'
 
 	def test_explore_by_sklearn(self):
 		learning = SemiSupervisedLearning(
-			sampling=self.most_confidence_sampling,
-			embeddings_model=self.transformers_embeddings_model,
-			classification_model=self.sklearn_classification_model
+			sampling='most_confidence',
+			embeddings=self.transformers_embeddings_model,
+			classification=self.sklearn_classification_model
 			)
 
 		learning.learn(self.train_texts, self.train_labels)
@@ -73,31 +48,15 @@ class TestLearningSemiSupervised(unittest.TestCase):
 
 	def test_explore_by_xgboost(self):
 		learning = SemiSupervisedLearning(
-			sampling=self.most_confidence_sampling,
-			embeddings_model=self.transformers_embeddings_model,
-			classification_model=self.xgboost_classification_model
+			sampling='most_confidence',
+			embeddings=self.transformers_embeddings_model,
+			classification=self.xgboost_classification_model
 			)
 		
 		learning.learn(self.train_texts, self.train_labels)
 		result = learning.explore(self.test_texts)
 		assert result, 'No output'
 		assert result['features'], 'Missed features attribute'
-
-	def test_custom_embeddings_model(self):
-		class CustomEmbeddings(Embeddings):
-			def convert(self, inputs: List[str]) -> np.ndarray:
-				return np.random.rand(len(inputs), 5)
-
-		learning = SemiSupervisedLearning(
-			sampling=self.most_confidence_sampling,
-			multi_label=True, 
-			embeddings_model=CustomEmbeddings(),
-			classification_model=self.sklearn_classification_model
-			)
-
-		learning.learn(self.train_texts, self.train_labels)
-
-		assert True, 'Unable to apply custom embeddings model'
 
 	def test_custom_classification_model(self):
 		class CustomClassification(Classification):
@@ -125,9 +84,9 @@ class TestLearningSemiSupervised(unittest.TestCase):
 					groups=preds.tolist())
 
 		learning = SemiSupervisedLearning(
-			sampling=self.most_confidence_sampling,
-			embeddings_model=self.transformers_embeddings_model,
-			classification_model=CustomClassification(model=None),
+			sampling='most_confidence',
+			embeddings=self.transformers_embeddings_model,
+			classification=CustomClassification(model=None),
 			multi_label=True
 			)
 

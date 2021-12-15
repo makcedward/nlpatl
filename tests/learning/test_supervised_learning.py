@@ -1,13 +1,9 @@
 from typing import List, Union
 from datasets import load_dataset
 import unittest
-import datasets
 import numpy as np
 
-from nlpatl.models.embeddings import (
-	Embeddings, 
-	Transformers
-)
+from nlpatl.models.embeddings import Transformers
 from nlpatl.models.classification import (
 	Classification, 
 	SkLearnClassification, 
@@ -39,32 +35,26 @@ class TestLearningSupervised(unittest.TestCase):
 				'use_label_encoder': False,
 				'eval_metric': 'logloss'
 			})
-		cls.entropy_sampling = EntropySampling()
 
-	def test_no_model(self):
-		learning = SupervisedLearning(
-			sampling=self.entropy_sampling,
-			embeddings_model=None,
-			classification_model=None
+		cls.learning = SupervisedLearning(
+			sampling='nearest_mean',
+			embeddings='bert-base-uncased', embeddings_type='transformers',
+			embeddings_model_config={'nn_fwk': 'pt', 'padding': True, 'batch_size':8},
+			classification='logistic_regression',
+			multi_label=False, 
 			)
 
-		with self.assertRaises(Exception) as error:
-			learning.explore(self.train_texts, self.train_labels, self.test_texts)
-		assert 'Embeddings model does not initialize yet' in str(error.exception), \
-			'Does not initialize embeddings model but still able to run'
+	def tearDown(self):
+		self.learning.clear_learn_data()
 
-		learning.embeddings_model = self.transformers_embeddings_model
-
-		with self.assertRaises(Exception) as error:
-			learning.explore(self.train_texts, self.train_labels, self.test_texts)
-		assert 'Classification model does not initialize yet' in str(error.exception), \
-			'Does not initialize classification model but still able to run'
+	def test_learn(self):
+		self.learning.learn(self.train_texts, self.train_labels)
 
 	def test_explore_by_sklearn(self):
 		learning = SupervisedLearning(
-			sampling=self.entropy_sampling,
-			embeddings_model=self.transformers_embeddings_model,
-			classification_model=self.sklearn_classification_model
+			sampling='entropy',
+			embeddings=self.transformers_embeddings_model,
+			classification=self.sklearn_classification_model
 			)
 
 		learning.learn(self.train_texts, self.train_labels)
@@ -73,9 +63,9 @@ class TestLearningSupervised(unittest.TestCase):
 
 	def test_explore_by_xgboost(self):
 		learning = SupervisedLearning(
-			sampling=self.entropy_sampling,
-			embeddings_model=self.transformers_embeddings_model,
-			classification_model=self.xgboost_classification_model
+			sampling='entropy',
+			embeddings=self.transformers_embeddings_model,
+			classification=self.xgboost_classification_model
 			)
 		
 		learning.learn(self.train_texts, self.train_labels)
@@ -83,54 +73,38 @@ class TestLearningSupervised(unittest.TestCase):
 		assert result, 'No output'
 		assert result['features'], 'Missed features attribute'
 
-	def test_custom_embeddings_model(self):
-		class CustomEmbeddings(Embeddings):
-			def convert(self, inputs: List[str]) -> np.ndarray:
-				return np.random.rand(len(inputs), 5)
+	# def test_custom_classification_model(self):
+	# 	class CustomClassification(Classification):
+	# 		def __init__(self, model):
+	# 			self.model = model
 
-		learning = SupervisedLearning(
-			sampling=self.entropy_sampling,
-			embeddings_model=CustomEmbeddings(),
-			classification_model=self.sklearn_classification_model,
-			multi_label=True,
-			)
+	# 		def train(self, x: np.array, 
+	# 			y: [np.array, List[str], List[int], List[List[str]], List[List[int]]]):
+	# 			"""
+	# 				Do training here
+	# 				e.g. self.model.train(x, y)
+	# 			""" 
+	# 			...
 
-		learning.learn(self.train_texts, self.train_labels)
+	# 		def predict_proba(self, x, predict_config: dict={}) -> Union[Dataset, object]:
+	# 			"""
+	# 				Do probability prediction here
+	# 				e.g. preds = self.model.predict_prob(x, **predict_config)
+	# 			"""
+	# 			probs = np.random.rand(len(x), 3)
+	# 			preds = np.argmax(probs, axis=1)
 
-		assert True, 'Unable to apply custom embeddings model'
+	# 			return Dataset(
+	# 				values=probs,
+	# 				groups=preds.tolist())
 
-	def test_custom_classification_model(self):
-		class CustomClassification(Classification):
-			def __init__(self, model):
-				self.model = model
+	# 	learning = SupervisedLearning(
+	# 		sampling=self.entropy_sampling,
+	# 		embeddings_model=self.transformers_embeddings_model,
+	# 		classification_model=CustomClassification(model=None),
+	# 		multi_label=True
+	# 		)
 
-			def train(self, x: np.array, 
-				y: [np.array, List[str], List[int], List[List[str]], List[List[int]]]):
-				"""
-					Do training here
-					e.g. self.model.train(x, y)
-				""" 
-				...
+	# 	learning.learn(self.train_texts, self.train_labels)
 
-			def predict_proba(self, x, predict_config: dict={}) -> Union[Dataset, object]:
-				"""
-					Do probability prediction here
-					e.g. preds = self.model.predict_prob(x, **predict_config)
-				"""
-				probs = np.random.rand(len(x), 3)
-				preds = np.argmax(probs, axis=1)
-
-				return Dataset(
-					values=probs,
-					groups=preds.tolist())
-
-		learning = SupervisedLearning(
-			sampling=self.entropy_sampling,
-			embeddings_model=self.transformers_embeddings_model,
-			classification_model=CustomClassification(model=None),
-			multi_label=True
-			)
-
-		learning.learn(self.train_texts, self.train_labels)
-
-		assert True, 'Unable to apply custom classification model'
+	# 	assert True, 'Unable to apply custom classification model'

@@ -4,7 +4,7 @@ import numpy as np
 from nlpatl.sampling import Sampling
 
 
-class NearestSampling(Sampling):
+class NearestMeanSampling(Sampling):
 	"""
 		Sampling data points according to the distances of cluster centriod. Picking n
 			nearest data points per number of cluster.
@@ -13,7 +13,7 @@ class NearestSampling(Sampling):
 		:type name: str
     """
     
-	def __init__(self, name: str = 'nearest_sampling'):
+	def __init__(self, name: str = 'nearest_mean_sampling'):
 		super().__init__(name=name)
 
 	def sample(self, data: np.ndarray, groups: np.ndarray,

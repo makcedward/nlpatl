@@ -1,17 +1,20 @@
+from typing import List, Union
 from datasets import load_dataset
 import unittest
 import datasets
 import numpy as np
 
-from nlpatl.models.embeddings import Transformers
+from nlpatl.models.embeddings import (
+	Embeddings, 
+	Transformers
+)
 from nlpatl.models.clustering import SkLearnClustering
 from nlpatl.models.classification import SkLearnClassification
 from nlpatl.learning import (
 	SupervisedLearning,
-	UnsupervisedLearning
+	UnsupervisedLearning,
+	SemiSupervisedLearning
 )
-from nlpatl.sampling.uncertainty import EntropySampling
-from nlpatl.sampling.clustering import NearestSampling
 from nlpatl.dataset import Dataset
 
 
@@ -32,31 +35,12 @@ class TestLearning(unittest.TestCase):
 		cls.sklearn_classification_model = SkLearnClassification(
 			'logistic_regression',
 			model_config={'max_iter': 500})
-		cls.entropy_sampling = EntropySampling()
-		cls.nearest_sampling = NearestSampling()
-
-	def test_unsupervised_explore(self):
-		learning = UnsupervisedLearning(
-			sampling=self.nearest_sampling,
-			embeddings_model=self.transformers_embeddings_model, 
-			clustering_model=self.sklearn_clustering_model)
-
-		result = learning.explore(self.train_texts)
-
-		assert not learning.learn_x, 'Learnt something at the beginning'
-
-		for index, feature, group in zip(
-			result['indices'], result['features'], result['groups']):
-
-			learning.educate(index, feature, group)
-
-		assert learning.learn_x, 'Unable to explore'
 
 	def test_uncertainty_educate(self):
 		learning = SupervisedLearning(
-			sampling=self.entropy_sampling,
-			embeddings_model=self.transformers_embeddings_model,
-			classification_model=self.sklearn_classification_model
+			sampling='entropy',
+			embeddings=self.transformers_embeddings_model,
+			classification=self.sklearn_classification_model
 			)
 		learning.learn(self.train_texts, self.train_labels)
 		first_result = learning.explore(self.test_texts, num_sample=2)
@@ -83,17 +67,17 @@ class TestLearning(unittest.TestCase):
 
 	def test_return_type(self):
 		learning = UnsupervisedLearning(
-			sampling=self.nearest_sampling,
-			embeddings_model=self.transformers_embeddings_model, 
-			clustering_model=self.sklearn_clustering_model)
+			sampling='nearest_mean',
+			embeddings=self.transformers_embeddings_model, 
+			clustering=self.sklearn_clustering_model)
 		result = learning.explore(self.train_texts, return_type='object')
 
 		assert result.features, 'Not object format'
 
 		learning = SupervisedLearning(
-			sampling=self.entropy_sampling,
-			embeddings_model=self.transformers_embeddings_model, 
-			classification_model=self.sklearn_classification_model
+			sampling='entropy',
+			embeddings=self.transformers_embeddings_model, 
+			classification=self.sklearn_classification_model
 			)
 		learning.learn(self.train_texts, self.train_labels)
 		result = learning.explore(self.test_texts, num_sample=2, 
@@ -103,7 +87,9 @@ class TestLearning(unittest.TestCase):
 
 	def test_educate_multi_label(self):
 		learning = UnsupervisedLearning(
-			sampling=self.entropy_sampling,
+			sampling='entropy',
+			embeddings=self.transformers_embeddings_model, 
+			clustering=self.sklearn_clustering_model,
 			multi_label=True)
 
 		expected_labels = [
@@ -117,3 +103,41 @@ class TestLearning(unittest.TestCase):
 
 		learn_indices, learn_x, learn_y = learning.get_learn_data()
 		assert expected_labels == learn_y, 'Unable to learn multi label'
+
+	def test_custom_embeddings_model(self):
+		class CustomEmbeddings(Embeddings):
+			def convert(self, inputs: List[str]) -> np.ndarray:
+				return np.random.rand(len(inputs), 5)
+
+		learning = UnsupervisedLearning(
+			sampling='nearest_mean',
+			embeddings=CustomEmbeddings(),
+			clustering='kmeans',
+			multi_label=False, 
+			)
+		learning.explore(self.train_texts)
+
+		assert True, 'Unable to apply custom embeddings model in UnsupervisedLearning'
+
+		learning = SupervisedLearning(
+			sampling='entropy',
+			embeddings=CustomEmbeddings(),
+			classification=self.sklearn_classification_model,
+			multi_label=True,
+			)
+
+		learning.learn(self.train_texts, self.train_labels)
+
+		assert True, 'Unable to apply custom embeddings model in SupervisedLearning'
+
+		learning = SemiSupervisedLearning(
+			sampling='most_confidence',
+			multi_label=True, 
+			embeddings=CustomEmbeddings(),
+			classification=self.sklearn_classification_model
+			)
+
+		learning.learn(self.train_texts, self.train_labels)
+
+		assert True, 'Unable to apply custom embeddings model in SemiSupervisedLearning'
+		
