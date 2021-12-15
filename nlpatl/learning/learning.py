@@ -217,6 +217,40 @@ class Learning:
 		else:
 			self.learn_id = [index]
 
+	def show_in_notebook(self, result: Dataset, data_type: str = 'text'):
+		i = 0
+		while i < len(result.features):
+			feature = result.features[i]
+			_id = result.indices[i]
+			metadata = '{}/{} Existing Label:{}\nID:{}\n'.format(
+				i+1, len(result.features), 
+				list(self.unique_y) if self.unique_y else [], _id)
+
+			# Display
+			if data_type == 'text':
+				metadata += feature + '\n'
+			elif data_type == 'image':
+				IPython.display.display(PIL.Image.fromarray(feature))
+			# elif data_type == 'audio':
+				# IPython.display.display()
+
+			label = input(metadata)
+			if not (label or label.strip()):
+				# Prompt same record again
+				continue
+
+			if self.multi_label:
+				labels = label.split(',')
+				labels = list(set([label for label in labels if label]))
+
+				self.educate(_id, feature, labels)
+				self.add_unique_y(labels)
+			else:
+				self.educate(_id, feature, label)
+				self.add_unique_y(label)
+			
+			i += 1
+
 	def explore_educate_in_notebook(self, 
 		x: [List[str], List[int], List[float], np.ndarray],
 		num_sample: int = 2, data_type: str = 'text'):
@@ -242,39 +276,4 @@ class Learning:
 					'`,`'.join(self.DATA_TYPES), data_type)
 		
 		result = self.explore(x, num_sample=num_sample, return_type='object')
-		i = 0
-		while i < len(result.features):
-			feature = result.features[i]
-			_id = result.indices[i]
-			metadata = '{}/{} Existing Label:{}\nID:{}\n'.format(
-				i+1, len(result.features), 
-				list(self.unique_y) if self.unique_y else [], _id)
-
-			# Display on notebook
-			if data_type == 'text':
-				metadata += feature + '\n'
-			elif data_type == 'image':
-				IPython.display.display(PIL.Image.fromarray(feature))
-			# elif data_type == 'audio':
-				# TODO: externalize
-				# import IPython
-				# IPython.display.display()
-
-			label = input(metadata)
-			if not (label or label.strip()):
-				# Prompt same record again
-				continue
-
-			if self.multi_label:
-				labels = label.split(',')
-				labels = list(set([label for label in labels if label]))
-
-				self.educate(_id, feature, labels)
-				self.add_unique_y(labels)
-			else:
-				self.educate(_id, feature, label)
-				self.add_unique_y(label)
-			
-			i += 1
-
-	
+		self.show_in_notebook(result, data_type=data_type)
