@@ -13,7 +13,7 @@ from nlpatl.models.clustering import (
 	SkLearnClustering
 )
 from nlpatl.learning import UnsupervisedLearning
-from nlpatl.sampling.unsupervised import ClusteringSampling
+from nlpatl.sampling.clustering import NearestSampling
 from nlpatl.dataset import Dataset
 
 
@@ -26,11 +26,11 @@ class TestLearningUnsupervised(unittest.TestCase):
 			'bert-base-uncased', nn_fwk='pt', padding=True, 
 			batch_size=3)
 		cls.sklearn_clustering_model = SkLearnClustering('kmeans')
-		cls.clustering_sampling = ClusteringSampling()
+		cls.nearest_sampling = NearestSampling()
 
 	def test_no_model(self):
 		learning = UnsupervisedLearning(
-			sampling=self.clustering_sampling
+			sampling=self.nearest_sampling
 			)
 
 		with self.assertRaises(Exception) as error:
@@ -50,7 +50,7 @@ class TestLearningUnsupervised(unittest.TestCase):
 				return np.random.rand(len(inputs), 5)
 
 		learning = UnsupervisedLearning(
-			sampling=self.clustering_sampling,
+			sampling=self.nearest_sampling,
 			embeddings_model=CustomEmbeddings(),
 			clustering_model=self.sklearn_clustering_model,
 			multi_label=True, 
