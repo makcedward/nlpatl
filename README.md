@@ -30,7 +30,8 @@ pip install git+https://github.com/makcedward/nlpatl.git
 * [Completed] Support SentenceTransformers
 * [Completed] Add Least Confidence Sampling and Most Confidence Sampling
 * [Completed] Add Semi-supervised learning
-* [Completed] Added Farthest (Clustering) Sampling, Mismatch (Uncertainity) Sampling
+* [Completed] Add Farthest (Clustering) Sampling, Mismatch (Uncertainity) Sampling
+* [Completed] Add Mismatch-farthest Learning
 
 # Citation
 ```latex
