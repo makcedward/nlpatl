@@ -7,3 +7,4 @@ Uncertainity Learning
    ./least_confidence
    ./entropy
    ./margin
+   ./mismatch
