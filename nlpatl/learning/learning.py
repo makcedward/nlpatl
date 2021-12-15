@@ -44,7 +44,7 @@ class Learning:
 		self.multi_label = multi_label
 		self.train_x = None
 		self.train_y = None
-		self.learn_id = None
+		self.learn_indices = None
 		self.learn_x = None
 		self.learn_y = None
 		self.unique_y = set()
@@ -97,7 +97,16 @@ class Learning:
 			:rtype: Tuple of index list of int, x (:class:`numpy.ndarray`) 
 				and y (:class:`numpy.ndarray`) 
 		"""
-		return self.learn_id, self.learn_x, self.learn_y
+		return self.learn_indices, self.learn_x, self.learn_y
+
+	def clear_learn_data(self):
+		"""
+			Clear all learn data points 
+		"""
+
+		self.learn_indices = None
+		self.learn_x = None
+		self.learn_y = None
 
 	def concatenate(self, data):
 		if type(data[0] is list):
@@ -212,10 +221,10 @@ class Learning:
 			self.learn_y = [y]
 		self.add_unique_y(y)
 
-		if self.learn_id:
-			self.learn_id.append(index)
+		if self.learn_indices:
+			self.learn_indices.append(index)
 		else:
-			self.learn_id = [index]
+			self.learn_indices = [index]
 
 	def show_in_notebook(self, result: Dataset, data_type: str = 'text'):
 		i = 0

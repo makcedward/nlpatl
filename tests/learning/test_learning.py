@@ -35,7 +35,7 @@ class TestLearning(unittest.TestCase):
 		cls.entropy_sampling = EntropySampling()
 		cls.nearest_sampling = NearestSampling()
 
-	def test_unsupervised_explore(self):
+	def test_clustering_explore(self):
 		learning = UnsupervisedLearning(
 			sampling=self.nearest_sampling,
 			embeddings_model=self.transformers_embeddings_model, 
