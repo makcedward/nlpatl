@@ -1,10 +1,10 @@
 import unittest
 import numpy as np
 
-from nlpatl.sampling.clustering import NearestSampling
+from nlpatl.sampling.clustering import NearestMeanSampling
 
 
-class TestSamplingNearest(unittest.TestCase):
+class TestSamplingNearestMean(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
 		cls.data = np.array([
@@ -20,7 +20,7 @@ class TestSamplingNearest(unittest.TestCase):
 		expected_indices = np.array([0, 6, 9, 13])
 
 		num_sample = 1
-		sampling = NearestSampling()
+		sampling = NearestMeanSampling()
 		indices, _ = sampling.sample(
 			self.data, self.groups, num_sample=num_sample)
 
