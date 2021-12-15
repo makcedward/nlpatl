@@ -1,5 +1,5 @@
-Unsupervised Learning
-=====================
+Clustering Sampling
+===================
 
 .. toctree::
    :maxdepth: 6
