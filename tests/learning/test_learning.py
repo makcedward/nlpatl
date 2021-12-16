@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Tuple
 from datasets import load_dataset
 import unittest
 import datasets
@@ -103,6 +103,25 @@ class TestLearning(unittest.TestCase):
 
 		learn_indices, learn_x, learn_y = learning.get_learn_data()
 		assert expected_labels == learn_y, 'Unable to learn multi label'
+
+	def test_custom_sampling(self):
+		def custom_sampling(
+		    data: np.ndarray, 
+		    num_sample: int) -> Tuple[np.ndarray, np.ndarray]:
+
+		    return np.array([1, 3, 5]), None
+
+		learning = SupervisedLearning(
+		    sampling=custom_sampling,
+		    embeddings='bert-base-uncased', embeddings_type='transformers',
+				embeddings_model_config={'nn_fwk': 'pt', 'padding': True, 'batch_size':8},
+		    classification='logistic_regression'
+		)
+
+		learning.learn(self.train_texts, self.train_labels)
+		learning.explore(self.test_texts)
+
+		assert True, 'Unable to apply custom sampling in SupervisedLearning'
 
 	def test_custom_embeddings_model(self):
 		class CustomEmbeddings(Embeddings):

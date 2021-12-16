@@ -73,38 +73,39 @@ class TestLearningSupervised(unittest.TestCase):
 		assert result, 'No output'
 		assert result['features'], 'Missed features attribute'
 
-	# def test_custom_classification_model(self):
-	# 	class CustomClassification(Classification):
-	# 		def __init__(self, model):
-	# 			self.model = model
+	def test_custom_classification_model(self):
+		class CustomClassification(Classification):
+			def __init__(self, model):
+				self.model = model
 
-	# 		def train(self, x: np.array, 
-	# 			y: [np.array, List[str], List[int], List[List[str]], List[List[int]]]):
-	# 			"""
-	# 				Do training here
-	# 				e.g. self.model.train(x, y)
-	# 			""" 
-	# 			...
+			def train(self, x: np.array, 
+				y: Union[np.array, List[str], List[int], List[List[str]], List[List[int]]]):
+				"""
+					Do training here
+					e.g. self.model.train(x, y)
+				""" 
+				...
 
-	# 		def predict_proba(self, x, predict_config: dict={}) -> Union[Dataset, object]:
-	# 			"""
-	# 				Do probability prediction here
-	# 				e.g. preds = self.model.predict_prob(x, **predict_config)
-	# 			"""
-	# 			probs = np.random.rand(len(x), 3)
-	# 			preds = np.argmax(probs, axis=1)
+			def predict_proba(self, x, predict_config: dict={}) -> Union[Dataset, object]:
+				"""
+					Do probability prediction here
+					e.g. preds = self.model.predict_prob(x, **predict_config)
+				"""
+				probs = np.random.rand(len(x), 3)
+				preds = np.argmax(probs, axis=1)
 
-	# 			return Dataset(
-	# 				values=probs,
-	# 				groups=preds.tolist())
+				return Dataset(
+					values=probs,
+					groups=preds.tolist())
 
-	# 	learning = SupervisedLearning(
-	# 		sampling=self.entropy_sampling,
-	# 		embeddings_model=self.transformers_embeddings_model,
-	# 		classification_model=CustomClassification(model=None),
-	# 		multi_label=True
-	# 		)
+		learning = SupervisedLearning(
+			sampling='entropy',
+			embeddings='bert-base-uncased', embeddings_type='transformers',
+			embeddings_model_config={'nn_fwk': 'pt', 'padding': True, 'batch_size':8},
+			classification=CustomClassification(model=None),
+			multi_label=True
+			)
 
-	# 	learning.learn(self.train_texts, self.train_labels)
+		learning.learn(self.train_texts, self.train_labels)
 
-	# 	assert True, 'Unable to apply custom classification model'
+		assert True, 'Unable to apply custom classification model'
