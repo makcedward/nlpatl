@@ -147,7 +147,7 @@ class SemiSupervisedLearning(Learning):
 		self.learn()
 
 		# Identify high confidence unannotated data
-		unannotated_x = self.filter(x, self.learn_id)
+		unannotated_x = self.filter(x, self.learn_indices)
 		x_features = self.embeddings_model.convert(unannotated_x)
 		preds = self.classification_model.predict_proba(x_features)
 
