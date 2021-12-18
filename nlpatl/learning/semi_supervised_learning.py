@@ -74,6 +74,7 @@ class SemiSupervisedLearning(Learning):
 			threshold=self_learn_threshold).sample
 		self.self_learn_indices = None
 		self.self_learn_x = None
+		self.self_learn_x_features = None
 		self.self_learn_y = None
 		self.self_learn_threshold = self_learn_threshold
 
@@ -89,33 +90,36 @@ class SemiSupervisedLearning(Learning):
 				and y (:class:`numpy.ndarray`) 
 		"""
 
-		return self.self_learn_indices, self.self_learn_x, self.self_learn_y
+		return self.self_learn_indices, self.self_learn_x, \
+			self.self_learn_x_features, self.self_learn_y
 
-	def get_annotated_data(self):
-		x = self.concatenate([d for d in [
-			self.train_x, self.learn_x, self.self_learn_x] if d])
-		y = self.concatenate([d for d in [
-			self.train_y, self.learn_y, self.self_learn_y] if d])
-		return x, y
+	# def get_annotated_data(self):
+	# 	x = self.concatenate([d for d in [
+	# 		self.train_x, self.learn_x, self.self_learn_x] if d])
+	# 	x_features = self.concatenate([d for d in [
+	# 		self.train_x_features, self.learn_x_features, self.self_learn_x_features] if d])
+	# 	y = self.concatenate([d for d in [
+	# 		self.train_y, self.learn_y, self.self_learn_y] if d])
+	# 	return x, x_features, y
 
 	def learn(self, x: Union[List[str], List[int], List[float], np.ndarray] = None, 
 		y: Union[List[str], List[int]] = None, include_learn_data: bool = True):
 
 		self.validate()
 
-		if x:
-			self.train_x = x
-		if y:
-			self.train_y = y
-		
 		if include_learn_data:
-			x, y = self.get_annotated_data()
-		self.init_unique_y(y)
+			all_x = self.concatenate(
+				[d for d in [x , self.learn_x, self.self_learn_x] if d])
+			all_y = self.concatenate(
+				[d for d in [y , self.learn_y, self.self_learn_y] if d])
+		else:
+			all_x = x
+			all_y = y
 
-		# TODO: cache features
-		x_features = self.embeddings_model.convert(x)
-		
-		self.classification_model.train(x_features, y)
+		self.add_unique_y(all_y)
+
+		x_features = self.embeddings_model.convert(all_x)
+		self.classification_model.train(x_features, all_y)
 
 	def explore(self, 
 		x: Union[List[str], List[int], List[float], np.ndarray], 
@@ -132,7 +136,7 @@ class SemiSupervisedLearning(Learning):
 		# Replace original probabilies by sampling values
 		preds.values = values
 
-		preds.features = [x[i] for i in preds.indices.tolist()]
+		preds.inputs = [x[i] for i in preds.indices.tolist()]
 
 		return self.get_return_object(preds, return_type)
 
@@ -151,7 +155,6 @@ class SemiSupervisedLearning(Learning):
 		x_features = self.embeddings_model.convert(unannotated_x)
 		preds = self.classification_model.predict_proba(x_features)
 
-		
 		indices, values = self.most_confidence_sampling(preds.values, len(preds))
 		preds.keep(indices)
 		# Replace original probabilies by sampling values
@@ -159,5 +162,7 @@ class SemiSupervisedLearning(Learning):
 
 		# NOT original indices. These are filtered indices 
 		indices = preds.indices
+		# self.self_learn_x_indices = self.filter(unannotated_x, indices)
 		self.self_learn_x = self.filter(unannotated_x, indices)
+		self.self_learn_x_features = self.filter(preds.features, indices)
 		self.self_learn_y = self.filter(preds.groups, indices)

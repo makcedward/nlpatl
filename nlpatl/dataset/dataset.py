@@ -4,11 +4,13 @@ import numpy as np
 
 class Dataset:
 	def __init__(self, values: np.ndarray, indices: Union[List[int], np.ndarray] = None,
-		features: Union[List[str], List[float], np.ndarray] = None, 
+		inputs: Union[List[str], List[float], np.ndarray] = None, 
+		features: Union[List[float], np.ndarray] = None, 
 		labels: Union[List[str], List[int]] = None, groups: Union[List[str], List[int]] = None,
 		name: str ='dataset'):
 		self.name = name
 
+		self.inputs = inputs
 		self.features = features
 		self.indices = np.array([i for i in range(len(values))]) if indices is None else indices
 		self.groups = groups
@@ -22,25 +24,22 @@ class Dataset:
 		indices = self.indices[~np.isin(self.indices, indices)]
 		self.keep(indices)
 
+	def _filter(self, data, indices):
+		if data is None:
+			return data
+		if type(data) is np.ndarray:
+			return data[indices]
+		else:
+			return [data[i] for i in indices.tolist()]
+
 	def keep(self, indices: np.ndarray):
-		if self.features is not None:
-			if type(self.features) is np.ndarray:
-				self.features = self.features[indices]
-			else:
-				self.features = [self.features[i] for i in indices.tolist()]
-
-		if self.indices is not None:
-			self.indices = self.indices[indices]
-
-		if self.labels:
-			self.labels = [self.labels[i] for i in indices.tolist()]
-
-		if self.groups:
-			self.groups = [self.groups[i] for i in indices.tolist()]
-				
-		if self.values is not None:
-			self.values = self.values[indices]
+		self.inputs = self._filter(self.inputs, indices)
+		self.features = self._filter(self.features, indices)
+		self.indices = self._filter(self.indices, indices)
+		self.labels = self._filter(self.labels, indices)
+		self.groups = self._filter(self.groups, indices)
+		self.values = self._filter(self.values, indices)
 
 	def __str__(self):
 		return 'Groups: {}, Indices: {}, Features: {}, Values: {}'.format(
-			self.groups, self.indices, self.features, self.values)
+			self.groups, self.indices, self.inputs, self.features, self.values)

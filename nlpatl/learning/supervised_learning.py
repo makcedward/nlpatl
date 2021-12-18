@@ -67,27 +67,27 @@ class SupervisedLearning(Learning):
 		super().validate(['embeddings', 'classification'])
 
 	def learn(self, x: Union[List[str], List[int], List[float], np.ndarray], 
-		y: Union[List[str], List[int]], include_leart_data: bool = True):
+		y: Union[List[str], List[int]], include_learn_data: bool = True):
 		
 		self.validate()
 
 		self.train_x = x
 		self.train_y = y
 
-		# TODO: cache features
-		if include_leart_data and self.learn_x is not None:
-			if type(x) is np.ndarray and type(self.learn_x) is ndarray:
-				x_features = self.embeddings_model.convert(
-					np.concatenate((x, self.learn_x)))
-			else:
-				x_features = self.embeddings_model.convert(
-					x+self.learn_x)
+		x_features = self.embeddings_model.convert(x)
 
+		# TODO: cache features
+		if include_learn_data and self.learn_x_features is not None:
+			x_features = np.concatenate((x_features, self.learn_x_features))
+			# if type(x) is np.ndarray and type(self.learn_x) is ndarray:
+			# 	x_features = self.embeddings_model.convert(
+			# 		np.concatenate((x, self.learn_x)))
+			# else:
+			# 	x_features = self.embeddings_model.convert(
+			# 		x+self.learn_x)
 			y += self.learn_y
-		else:
-			x_features = self.embeddings_model.convert(x)
+			
 		self.init_unique_y(y)
-		
 		self.classification_model.train(x_features, y)
 
 	def explore(self, x: List[str], return_type: str = 'dict', 
@@ -103,6 +103,6 @@ class SupervisedLearning(Learning):
 		# Replace original probabilies by sampling values
 		preds.values = values
 
-		preds.features = [x[i] for i in preds.indices.tolist()]
+		preds.inputs = [x[i] for i in preds.indices.tolist()]
 
 		return self.get_return_object(preds, return_type)

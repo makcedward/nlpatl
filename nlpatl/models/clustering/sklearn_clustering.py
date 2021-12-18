@@ -85,4 +85,8 @@ class SkLearnClustering(Clustering):
 			
 			start_pos = end_pos
 
-		return Dataset(indices=indices, values=values, groups=groups)
+		return Dataset(
+			features=x,
+			indices=indices, 
+			values=values, 
+			groups=groups)

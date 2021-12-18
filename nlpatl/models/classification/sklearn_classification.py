@@ -86,5 +86,6 @@ class SkLearnClassification(Classification):
 		preds = np.argmax(probs, axis=1)
 
 		return Dataset(
+			features=x,
 			values=probs,
 			groups=preds.tolist())
