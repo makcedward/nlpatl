@@ -156,13 +156,14 @@ class SemiSupervisedLearning(Learning):
 		preds = self.classification_model.predict_proba(x_features)
 
 		indices, values = self.most_confidence_sampling(preds.values, len(preds))
-		preds.keep(indices)
-		# Replace original probabilies by sampling values
-		preds.values = values
+		if len(indices) > 0:
+			preds.keep(indices)
+			# Replace original probabilies by sampling values
+			preds.values = values
 
-		# NOT original indices. These are filtered indices 
-		indices = preds.indices
-		# self.self_learn_x_indices = self.filter(unannotated_x, indices)
-		self.self_learn_x = self.filter(unannotated_x, indices)
-		self.self_learn_x_features = self.filter(preds.features, indices)
-		self.self_learn_y = self.filter(preds.groups, indices)
+			# NOT original indices. These are filtered indices 
+			indices = preds.indices
+			# self.self_learn_x_indices = self.filter(unannotated_x, indices)
+			self.self_learn_x = self.filter(unannotated_x, indices)
+			self.self_learn_x_features = self.filter(preds.features, indices)
+			self.self_learn_y = self.filter(preds.groups, indices)
