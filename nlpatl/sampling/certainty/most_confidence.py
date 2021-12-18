@@ -30,6 +30,10 @@ class MostConfidenceSampling(Sampling):
 		# Calucalte most confidence
 		most_confidences = np.max(data, axis=1)
 		indices = np.argwhere(most_confidences > self.threshold).flatten()
-		indices = np.random.choice(indices, num_node)
 
-		return indices, most_confidences[indices]
+		# It is possible that no result
+		if len(indices) > 0:
+			indices = np.random.choice(indices, num_node)
+			return indices, most_confidences[indices]
+
+		return np.empty(0), np.empty(0)
