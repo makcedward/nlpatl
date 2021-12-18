@@ -82,7 +82,7 @@ class UnsupervisedLearning(Learning):
 		# Replace original probabilies by sampling values
 		preds.values = values
 
-		preds.features = [inputs[i] for i in preds.indices.tolist()]
+		preds.inputs = [inputs[i] for i in preds.indices.tolist()]
 
 		return self.get_return_object(preds, return_type)
 		

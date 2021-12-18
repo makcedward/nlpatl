@@ -74,6 +74,7 @@ class Learning:
 		self.train_y = None
 		self.learn_indices = None
 		self.learn_x = None
+		self.learn_x_features = None
 		self.learn_y = None
 		self.unique_y = set()
 
@@ -221,10 +222,11 @@ class Learning:
 			Get all learn data points 
 
 			:return: Learnt data points
-			:rtype: Tuple of index list of int, x (:class:`numpy.ndarray`) 
+			:rtype: Tuple of index list of int, x (str or :class:`numpy.ndarray`) 
+				x_features (:class:`numpy.ndarray`) 
 				and y (:class:`numpy.ndarray`) 
 		"""
-		return self.learn_indices, self.learn_x, self.learn_y
+		return self.learn_indices, self.learn_x, self.learn_x_features, self.learn_y
 
 	def clear_learn_data(self):
 		"""
@@ -233,6 +235,7 @@ class Learning:
 
 		self.learn_indices = None
 		self.learn_x = None
+		self.learn_x_features = None
 		self.learn_y = None
 
 	def concatenate(self, data):
@@ -242,16 +245,16 @@ class Learning:
 			return np.concatenate(data)
 		raise ValueError('Does not support {} data type yet'.format(type(data[0])))
 
-	def get_annotated_data(self):
-		"""
-			Get all annotated data points (given and learnt data points)
+	# def get_annotated_data(self):
+	# 	"""
+	# 		Get all annotated data points (given and learnt data points)
 
-			:return: Annotated data of training and learnt data points
-			:rtype: Tuple of x (:class:`numpy.ndarray`) and y (:class:`numpy.ndarray`) 
-		"""
-		x = self.concatenate([d for d in [self.train_x, self.learn_x] if d])
-		y = self.concatenate([d for d in [self.train_y, self.learn_y] if d])
-		return x, y
+	# 		:return: Annotated data of training and learnt data points
+	# 		:rtype: Tuple of x (:class:`numpy.ndarray`) and y (:class:`numpy.ndarray`) 
+	# 	"""
+	# 	x = self.concatenate([d for d in [self.train_x, self.learn_x] if d])
+	# 	y = self.concatenate([d for d in [self.train_y, self.learn_y] if d])
+	# 	return x, y
 
 	def init_unique_y(self, y):
 		self.unique_y = set(list(y))
@@ -270,7 +273,7 @@ class Learning:
 			self.unique_y.add(y)
 
 	def learn(self, x: [List[str], List[int], List[float], np.ndarray], 
-		y: [List[str], List[int]], include_leart_data: bool = True):
+		y: [List[str], List[int]], include_learn_data: bool = True):
 		"""
 			Train the classification model.
 
@@ -309,6 +312,7 @@ class Learning:
 
 	def educate(self, index: Union[str, int], 
 		x: Union[str, int, float, np.ndarray],
+		x_features: Union[int, float, np.ndarray],
 		y: Union[str, int, List[str], List[int]]):
 		"""
 			Annotate data point. Only allowing annotate data point
@@ -318,6 +322,8 @@ class Learning:
 			:type index: int
 			:param x: Raw data input. It can be text, number or numpy (for image).
 			:type x: string, int, float or :class:`np.ndarray`
+			:param x_features: Data features
+			:type x_features: int, float or :class:`np.ndarray`
 			:param y: Label of data point
 			:type y: string, int, list of string (multi-label case)
 				or list or int (multi-label case)
@@ -338,6 +344,21 @@ class Learning:
 				'Only support `{}`'.format(type(x), '`,`'.join(
 					['str', 'int', 'float', 'list', 'np.ndarray']))
 
+		if type(x_features) in [int, float, list]:
+			if self.learn_x_features:
+				self.learn_x_features.append(x_features)
+			else:
+				self.learn_x_features = [x_features]
+		elif type(x_features) is np.ndarray:
+			if self.learn_x_features is not None:
+				self.learn_x_features = np.concatenate((self.learn_x_features, np.array([x_features])), axis=0)
+			else:
+				self.learn_x_features = np.array([x_features])
+		else:
+			assert False, '{} data type does not support in `x_features` yet. '\
+				'Only support `{}`'.format(type(x), '`, `'.join(
+					['int', 'float', 'list', 'np.ndarray']))
+
 		if self.unique_y:
 			y_data_type = type(next(iter(self.unique_y)))
 			if y_data_type is int:
@@ -356,6 +377,7 @@ class Learning:
 	def show_in_notebook(self, result: Dataset, data_type: str = 'text'):
 		i = 0
 		while i < len(result.features):
+			inputs = result.inputs[i]
 			feature = result.features[i]
 			_id = result.indices[i]
 			metadata = '{}/{} Existing Label:{}\nID:{}\n'.format(
@@ -364,9 +386,9 @@ class Learning:
 
 			# Display
 			if data_type == 'text':
-				metadata += feature + '\n'
+				metadata += inputs + '\n'
 			elif data_type == 'image':
-				IPython.display.display(PIL.Image.fromarray(feature))
+				IPython.display.display(PIL.Image.fromarray(inputs))
 			# elif data_type == 'audio':
 				# IPython.display.display()
 
@@ -379,10 +401,10 @@ class Learning:
 				labels = label.split(',')
 				labels = list(set([label for label in labels if label]))
 
-				self.educate(_id, feature, labels)
+				self.educate(_id, inputs, feature, labels)
 				self.add_unique_y(labels)
 			else:
-				self.educate(_id, feature, label)
+				self.educate(_id, inputs, feature, label)
 				self.add_unique_y(label)
 			
 			i += 1

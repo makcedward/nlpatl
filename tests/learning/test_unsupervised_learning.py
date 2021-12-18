@@ -25,9 +25,10 @@ class TestLearningUnsupervised(unittest.TestCase):
 
 		assert not self.learning.learn_x, 'Learnt something at the beginning'
 
-		for index, feature, group in zip(
-			result['indices'], result['features'], result['groups']):
+		for index, inputs, feature, group in zip(
+			result['indices'], result['inputs'], 
+			result['features'], result['groups']):
 
-			self.learning.educate(index, feature, group)
+			self.learning.educate(index, inputs, feature, group)
 
 		assert self.learning.learn_x, 'Unable to explore'

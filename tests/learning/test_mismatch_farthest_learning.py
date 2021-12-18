@@ -39,6 +39,7 @@ class TestLearningMismatchFarthest(unittest.TestCase):
 		learn_indices  = np.array([1, 3, 5])
 		self.learning.learn_indices = learn_indices
 		self.learning.learn_x = [self.train_texts[idx] for idx in learn_indices]
+		self.learning.learn_x_features = [self.train_features[idx] for idx in learn_indices]
 		self.learning.learn_y = [self.train_labels[idx] for idx in learn_indices]
 
 		result = self.learning.explore_second_stage(x=self.train_features)

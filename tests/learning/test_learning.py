@@ -48,11 +48,11 @@ class TestLearning(unittest.TestCase):
 		assert not learning.learn_x, 'Learnt something at the beginning'
 
 		test_texts = self.test_texts
-		for index, feature, group in zip(
-			first_result['indices'], first_result['features'], 
-			first_result['groups']):
+		for index, inputs, feature, group in zip(
+			first_result['indices'], first_result['inputs'], 
+			first_result['features'], first_result['groups']):
 
-			learning.educate(index, feature, group)
+			learning.educate(index, inputs, feature, group)
 
 		assert learning.learn_x, 'Unable to explore'
 
@@ -62,8 +62,8 @@ class TestLearning(unittest.TestCase):
 
 		# Expect learnt record should be be picked again
 		assert len(second_result['features']) > 0, 'No learnt data'
-		for f in second_result['features']:
-			assert f not in first_result['features'], 'Low quality of learnt data'
+		for f in second_result['inputs']:
+			assert f not in first_result['inputs'], 'Low quality of learnt data'
 
 	def test_return_type(self):
 		learning = UnsupervisedLearning(
@@ -72,7 +72,7 @@ class TestLearning(unittest.TestCase):
 			clustering=self.sklearn_clustering_model)
 		result = learning.explore(self.train_texts, return_type='object')
 
-		assert result.features, 'Not object format'
+		assert result.inputs, 'Not object format'
 
 		learning = SupervisedLearning(
 			sampling='entropy',
@@ -83,7 +83,7 @@ class TestLearning(unittest.TestCase):
 		result = learning.explore(self.test_texts, num_sample=2, 
 			return_type='object')
 
-		assert result.features, 'Not object format'
+		assert result.inputs, 'Not object format'
 
 	def test_educate_multi_label(self):
 		learning = UnsupervisedLearning(
@@ -98,10 +98,12 @@ class TestLearning(unittest.TestCase):
 			['3', '4']
 		]
 
-		for i in range(3):
-			learning.educate(i, self.train_texts[i], expected_labels[i])
 
-		learn_indices, learn_x, learn_y = learning.get_learn_data()
+		for i in range(3):
+			x_features = learning.embeddings_model.convert(self.train_texts[i])[0]
+			learning.educate(i, self.train_texts[i], x_features, expected_labels[i])
+
+		learn_indices, learn_x, learn_x_features, learn_y = learning.get_learn_data()
 		assert expected_labels == learn_y, 'Unable to learn multi label'
 
 	def test_custom_sampling(self):

@@ -60,6 +60,7 @@ class TestLearningSupervised(unittest.TestCase):
 		learning.learn(self.train_texts, self.train_labels)
 		result = learning.explore(self.test_texts)
 		assert result, 'No output'
+		assert result['inputs'], 'Missed inputs attribute'
 
 	def test_explore_by_xgboost(self):
 		learning = SupervisedLearning(
@@ -71,7 +72,7 @@ class TestLearningSupervised(unittest.TestCase):
 		learning.learn(self.train_texts, self.train_labels)
 		result = learning.explore(self.test_texts)
 		assert result, 'No output'
-		assert result['features'], 'Missed features attribute'
+		assert result['inputs'], 'Missed inputs attribute'
 
 	def test_custom_classification_model(self):
 		class CustomClassification(Classification):

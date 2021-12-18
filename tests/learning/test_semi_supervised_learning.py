@@ -45,6 +45,7 @@ class TestLearningSemiSupervised(unittest.TestCase):
 		learning.learn(self.train_texts, self.train_labels)
 		result = learning.explore(self.test_texts)
 		assert result, 'No output'
+		assert result['inputs'], 'Missed inputs attribute'
 
 	def test_explore_by_xgboost(self):
 		learning = SemiSupervisedLearning(
@@ -56,7 +57,7 @@ class TestLearningSemiSupervised(unittest.TestCase):
 		learning.learn(self.train_texts, self.train_labels)
 		result = learning.explore(self.test_texts)
 		assert result, 'No output'
-		assert result['features'], 'Missed features attribute'
+		assert result['inputs'], 'Missed inputs attribute'
 
 	def test_custom_classification_model(self):
 		class CustomClassification(Classification):
@@ -80,6 +81,7 @@ class TestLearningSemiSupervised(unittest.TestCase):
 				preds = np.argmax(probs, axis=1)
 
 				return Dataset(
+					feautes=x,
 					values=probs,
 					groups=preds.tolist())
 

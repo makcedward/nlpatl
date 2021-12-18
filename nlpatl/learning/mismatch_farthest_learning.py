@@ -148,7 +148,7 @@ class MismatchFarthestLearning(Learning):
 
 	def explore_second_stage(self, x: np.ndarray, num_sample: int = 2):
 		# Get annotated dataset
-		learn_indices, learn_x, learn_y = self.get_learn_data()
+		learn_indices, learn_x, learn_x_features, learn_y = self.get_learn_data()
 		encoded_learn_y, learn_y_decoder, unique_y_encoder = self.build_seq_encoder(
 			learn_y)
 		# TODO: cache
@@ -199,16 +199,13 @@ class MismatchFarthestLearning(Learning):
 		# First stage clustering learning
 		valuable_data = self.explore_first_stage(
 			x_features, num_sample=num_sample)
-		valuable_data.features = [x[i] for i in valuable_data.indices]
+		valuable_data.inputs = [x[i] for i in valuable_data.indices]
 		self.show_in_notebook(valuable_data, data_type=data_type)
 
 		# Second stage mismatch-farthest
-		safety_break_cnt = 20
-		while len(self.learn_x) < num_sample and safety_break_cnt > 0:
-			safety_break_cnt -= 1
-
+		while len(self.learn_x) < num_sample:
 			valuable_data = self.explore_second_stage(
 				x=x_features, num_sample=num_sample_per_cluster)
-			valuable_data.features = [x[i] for i in valuable_data.indices]
+			valuable_data.inputs = [x[i] for i in valuable_data.indices]
 
 			self.show_in_notebook(valuable_data, data_type=data_type)
