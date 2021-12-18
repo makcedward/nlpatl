@@ -21,7 +21,7 @@ pip install git+https://github.com/makcedward/nlpatl.git
 * [Custom Embeddings, Classification, Clustering and Learning function](https://colab.research.google.com/drive/1IB2OWzgoPCIOjjqhjX9boyK17K3bpgmz?usp=sharing)
 
 # Release
-0.0.2dev
+0.0.2, Dec 17, 2021
 * [Completed] Transformers supports Tensorflow
 * [Completed] Performance tuning during clustering
 * [Completed] Support multi-label
