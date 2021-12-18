@@ -245,17 +245,6 @@ class Learning:
 			return np.concatenate(data)
 		raise ValueError('Does not support {} data type yet'.format(type(data[0])))
 
-	# def get_annotated_data(self):
-	# 	"""
-	# 		Get all annotated data points (given and learnt data points)
-
-	# 		:return: Annotated data of training and learnt data points
-	# 		:rtype: Tuple of x (:class:`numpy.ndarray`) and y (:class:`numpy.ndarray`) 
-	# 	"""
-	# 	x = self.concatenate([d for d in [self.train_x, self.learn_x] if d])
-	# 	y = self.concatenate([d for d in [self.train_y, self.learn_y] if d])
-	# 	return x, y
-
 	def init_unique_y(self, y):
 		self.unique_y = set(list(y))
 
