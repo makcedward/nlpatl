@@ -93,15 +93,6 @@ class SemiSupervisedLearning(Learning):
 		return self.self_learn_indices, self.self_learn_x, \
 			self.self_learn_x_features, self.self_learn_y
 
-	# def get_annotated_data(self):
-	# 	x = self.concatenate([d for d in [
-	# 		self.train_x, self.learn_x, self.self_learn_x] if d])
-	# 	x_features = self.concatenate([d for d in [
-	# 		self.train_x_features, self.learn_x_features, self.self_learn_x_features] if d])
-	# 	y = self.concatenate([d for d in [
-	# 		self.train_y, self.learn_y, self.self_learn_y] if d])
-	# 	return x, x_features, y
-
 	def learn(self, x: Union[List[str], List[int], List[float], np.ndarray] = None, 
 		y: Union[List[str], List[int]] = None, include_learn_data: bool = True):
 
