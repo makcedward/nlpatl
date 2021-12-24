@@ -40,7 +40,7 @@ extra_reqs['all'] = deps
 
 setup(
     name="nlpatl",
-    version="0.0.2",
+    version="0.0.3dev",
     author="Edward Ma",
     author_email="makcedward@gmail.com",
     url="https://github.com/makcedward/nlpatl",
