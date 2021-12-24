@@ -50,7 +50,10 @@ CLASSIFICATION_MODEL_FOR_ALL_MAPPING_NAMES = {
 	'svc': nmcla.SkLearnClassification,
 	'linear_svc': nmcla.SkLearnClassification,
 	'random_forest': nmcla.SkLearnClassification,
-	'xgboost': nmcla.XGBoostClassification
+	'xgboost': nmcla.XGBoostClassification,
+	'sgd': nmcla.SkLearnClassification,
+	'knn': nmcla.SkLearnClassification,
+	'gbdt': nmcla.SkLearnClassification
 }
 
 

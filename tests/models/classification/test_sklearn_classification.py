@@ -1,11 +1,7 @@
 import unittest
 import sklearn
-import xgboost
 
-from nlpatl.models.classification import (
-	SkLearnClassification,
-	XGBoostClassification
-)
+from nlpatl.models.classification import SkLearnClassification
 
 
 class TestModelClassificationSkLearn(unittest.TestCase):
@@ -51,7 +47,19 @@ class TestModelClassificationSkLearn(unittest.TestCase):
 
 		classification = SkLearnClassification('random_forest')
 		assert type(classification.model) is sklearn.ensemble._forest.RandomForestClassifier, \
-			'Unable to initialize Random Forest Classifier'
+			'Unable to initialize Random Forest'
+
+		classification = SkLearnClassification('sgd')
+		assert type(classification.model) is sklearn.linear_model._stochastic_gradient.SGDClassifier, \
+			'Unable to initialize SGD'
+
+		classification = SkLearnClassification('knn')
+		assert type(classification.model) is sklearn.neighbors._classification.KNeighborsClassifier, \
+			'Unable to initialize KNN'
+
+		classification = SkLearnClassification('gbdt')
+		assert type(classification.model) is sklearn.ensemble._gb.GradientBoostingClassifier, \
+			'Unable to initialize GBDT'
 
 	def test_classify(self):
 		classification = SkLearnClassification('logistic_regression')
