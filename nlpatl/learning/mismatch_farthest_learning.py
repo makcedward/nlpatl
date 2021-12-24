@@ -30,11 +30,11 @@ class MismatchFarthestLearning(Learning):
 		|	1. [NLPatl] Convert raw data to features (Embeddings model)
 		|	2. [NLPatl] Train model and clustering data points (Clustering model)
 		|	3. [NLPatl] Estmiate the most valuable data points (Sampling)
-		|	4. [Human] Subject matter exepknrnts annotates the most valuable data points
+		|	4. [Human] Subject matter experts annotates the most valuable data points
 		|	5. [NLPatl] Train classification model (Classification model)
 		|	6. [NLPatl] Classify unlabeled data points and comparing the clustering model result
 			according to the farthest mismatch data points
-		|	7. [Human] Subject matter exepknrnts annotates the most valuable data points
+		|	7. [Human] Subject matter experts annotates the most valuable data points
 		|	8. Repeat Step 2 to 7 until acquire enough data points or reach other
 			exit criteria.
 		
