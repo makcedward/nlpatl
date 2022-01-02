@@ -42,7 +42,8 @@ EMBEDDINGS_MODEL_FOR_ALL_MAPPING_NAMES = {
 }
 
 CLUSTERING_MODEL_FOR_ALL_MAPPING_NAMES = {
-	'kmeans': nmclu.SkLearnClustering
+	'kmeans': nmclu.SkLearnClustering,
+	'kmedoids': nmclu.SkLearnExtraClustering
 }
 
 CLASSIFICATION_MODEL_FOR_ALL_MAPPING_NAMES = {

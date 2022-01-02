@@ -22,7 +22,8 @@ _deps = [
     'tensorflow>=2.7.0',
     'Pillow>=8.2.0',
     'sphinx-rtd-theme>=1.0.0',
-    'sentence_transformers>=2.1.0'
+    'sentence_transformers>=2.1.0',
+    'scikit-learn-extra>=0.2.0',
 ]
 
 # support both w and w/ version
@@ -31,7 +32,7 @@ deps = {b: a for a, b in (re.findall(r"^(([^!=<>]+)(?:[!=<>].*)?$)", x)[0] for x
 def deps_list(*pkgs):
     return [deps[pkg] for pkg in pkgs]
 
-install_reqs = deps_list('scipy', 'numpy', 'scikit-learn', 'transformers')
+install_reqs = deps_list('scipy', 'numpy', 'scikit-learn', 'transformers', 'scikit-learn-extra')
 
 extra_reqs = {}
 extra_reqs['image'] = deps_list('Pillow')

@@ -41,6 +41,7 @@ if __name__ == '__main__':
 
     # Clustering
     # suites.append(unittest.TestLoader().loadTestsFromName('models.clustering.test_sklearn_clustering'))
+    # suites.append(unittest.TestLoader().loadTestsFromName('models.clustering.test_sklearn_extra_clustering'))
 
     # Classification
     # suites.append(unittest.TestLoader().loadTestsFromName('models.classification.test_sklearn_classification'))
