@@ -1,6 +1,6 @@
 import unittest
 
-from nlpatl.models.clustering.sklearn_clustering import SkLearnClustering
+from nlpatl.models.clustering import SkLearnClustering
 
 
 class TestModelClusteringSkLearn(unittest.TestCase):

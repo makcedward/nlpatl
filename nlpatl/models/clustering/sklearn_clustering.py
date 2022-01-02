@@ -5,7 +5,7 @@ from sklearn.cluster import (
 	KMeans
 )
 
-from nlpatl.models.clustering.clustering import Clustering
+from nlpatl.models.clustering import Clustering
 from nlpatl.dataset import Dataset
 
 MODEL_FOR_SKLEARN_CLUSTERING_MAPPING_NAMES = {
@@ -37,13 +37,13 @@ class SkLearnClustering(Clustering):
 		self.model_name = model_name
 		self.model_config = model_config
 
-		if model_name in MODEL_FOR_SKLEARN_CLUSTERING_MAPPING_NAMES:
-			self.model = MODEL_FOR_SKLEARN_CLUSTERING_MAPPING_NAMES[model_name](
+		if model_name in self.get_mapping():
+			self.model = self.get_mapping()[model_name](
 				**model_config)
 		else:
 			raise ValueError('`{}` does not support. Supporting {} only'.format(
 				model_name, '`' + '`,`'.join(
-					MODEL_FOR_SKLEARN_CLUSTERING_MAPPING_NAMES.keys()) + '`'))
+					self.get_mapping().keys()) + '`'))
 
 	@staticmethod
 	def get_mapping() -> dict:
@@ -64,8 +64,6 @@ class SkLearnClustering(Clustering):
 			:return: Feature and probabilities
 			:rtype: :class:`nlptatl.dataset.Dataset`
 		"""
-
-		num_cluster = self.model.n_clusters
 
 		clust_dists = self.model.transform(x)
 		preds = self.model.predict(x, **predict_config)
