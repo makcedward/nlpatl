@@ -42,7 +42,8 @@ EMBEDDINGS_MODEL_FOR_ALL_MAPPING_NAMES = {
 }
 
 CLUSTERING_MODEL_FOR_ALL_MAPPING_NAMES = {
-	'kmeans': nmclu.SkLearnClustering
+	'kmeans': nmclu.SkLearnClustering,
+	'kmedoids': nmclu.SkLearnExtraClustering
 }
 
 CLASSIFICATION_MODEL_FOR_ALL_MAPPING_NAMES = {
@@ -50,7 +51,10 @@ CLASSIFICATION_MODEL_FOR_ALL_MAPPING_NAMES = {
 	'svc': nmcla.SkLearnClassification,
 	'linear_svc': nmcla.SkLearnClassification,
 	'random_forest': nmcla.SkLearnClassification,
-	'xgboost': nmcla.XGBoostClassification
+	'xgboost': nmcla.XGBoostClassification,
+	'sgd': nmcla.SkLearnClassification,
+	'knn': nmcla.SkLearnClassification,
+	'gbdt': nmcla.SkLearnClassification
 }
 
 
@@ -85,12 +89,12 @@ class Learning:
 			embeddings, embeddings_type, embeddings_model_config)
 
 		if classification:
-			self.classification_model_config = classification_model_config
+			self.classification_model_config = classification_model_config or {}
 			self.classification_name, self.classification_model = self.init_classification_model(
 				classification, classification_model_config)
 		
 		if clustering:
-			self.clustering_model_config = clustering_model_config
+			self.clustering_model_config = clustering_model_config or {}
 			self.clustering_name, self.clustering_model = self.init_clustering_model(
 				clustering, clustering_model_config)
 

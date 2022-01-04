@@ -7,7 +7,7 @@ from nlpatl.sampling import Sampling
 class LeastConfidenceSampling(Sampling):
 	"""
 		Sampling data points according to the least confidence. Pick the lowest
-			probabilies for the highest class.
+			probabilies for the highest class. https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.219.1846&rep=rep1&type=pdf
 
 		:param name: Name of this sampling
 		:type name: str

@@ -1,9 +1,10 @@
 import unittest
+import sklearn_extra
 
-from nlpatl.models.clustering import SkLearnClustering
+from nlpatl.models.clustering import SkLearnExtraClustering
 
 
-class TestModelClusteringSkLearn(unittest.TestCase):
+class TestModelClusteringSkLearnExtra(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
 		cls.train_features = [
@@ -16,22 +17,26 @@ class TestModelClusteringSkLearn(unittest.TestCase):
 		]
 
 	def test_parameters(self):
-		clustering = SkLearnClustering()
+		clustering = SkLearnExtraClustering()
 		assert 8 == clustering.model.n_clusters, \
 			'Invalid when using default parameters'
 
 		model_config = {}
-		clustering = SkLearnClustering(model_config=model_config)
+		clustering = SkLearnExtraClustering(model_config=model_config)
 		assert 8 == clustering.model.n_clusters, \
 			'Invalid when passing emtpy parameters'
 
 		model_config = {'n_clusters': 4}
-		clustering = SkLearnClustering(model_config=model_config)
+		clustering = SkLearnExtraClustering(model_config=model_config)
 		assert 4 == clustering.model.n_clusters, \
 			'Invalid when passing parameter'
 
+		clustering = SkLearnExtraClustering(model_name='kmedoids')
+		assert type(clustering.model) is sklearn_extra.cluster._k_medoids.KMedoids, \
+			'Unable to initialize KMedoids'
+
 	def test_cluster(self):
-		clustering = SkLearnClustering()
+		clustering = SkLearnExtraClustering()
 		clustering.train(self.train_features)
 		result = clustering.predict_proba(self.train_features)
 

@@ -5,14 +5,19 @@
 from typing import List, Union
 from collections import defaultdict
 from sklearn.linear_model import (
-	LogisticRegression
+	LogisticRegression,
+	SGDClassifier
 )
 from sklearn.svm import (
 	SVC,
 	LinearSVC
 )
 from sklearn.ensemble import (
-	RandomForestClassifier
+	RandomForestClassifier,
+	GradientBoostingClassifier
+)
+from sklearn.neighbors import (
+	KNeighborsClassifier
 )
 import numpy as np
 
@@ -23,7 +28,10 @@ MODEL_FOR_SKLEARN_CLASSIFICATION_MAPPING_NAMES = {
 	'logistic_regression': LogisticRegression,
 	'svc': SVC,
 	'linear_svc': LinearSVC,
-	'random_forest': RandomForestClassifier
+	'random_forest': RandomForestClassifier,
+	'sgd': SGDClassifier,
+	'knn': KNeighborsClassifier,
+	'gbdt': GradientBoostingClassifier
 }
 
 
