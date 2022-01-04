@@ -59,7 +59,7 @@ class SkLearnClustering(Clustering):
 			:param x: Raw features
 			:type x: np.ndarray
 			:param predict_config: Model prediction paramateters. Refer to https://scikit-learn.org/stable/modules/classes.html#module-sklearn.cluster
-			:type model_config: dict
+			:type predict_config: dict
 
 			:return: Feature and probabilities
 			:rtype: :class:`nlptatl.dataset.Dataset`

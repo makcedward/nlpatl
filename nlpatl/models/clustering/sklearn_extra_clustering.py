@@ -8,6 +8,7 @@ from sklearn_extra.cluster import (
 from nlpatl.models.clustering import SkLearnClustering
 from nlpatl.dataset import Dataset
 
+
 MODEL_FOR_SKLEARN_EXTRA_CLUSTERING_MAPPING_NAMES = {
     'kmedoids': KMedoids
 }
@@ -39,6 +40,7 @@ class SkLearnExtraClustering(SkLearnClustering):
 		return MODEL_FOR_SKLEARN_EXTRA_CLUSTERING_MAPPING_NAMES
 
 	def train(self, x: Union[List[float], np.ndarray]):
+		# sci-kit learn extra does not support pre-assign centers
 		self.model.fit(x)
 
 	def predict_proba(self, x: np.ndarray, predict_config: dict={}) -> Dataset:
@@ -46,7 +48,7 @@ class SkLearnExtraClustering(SkLearnClustering):
 			:param x: Raw features
 			:type x: np.ndarray
 			:param predict_config: Model prediction paramateters. Refer to https://scikit-learn-extra.readthedocs.io/en/stable/api.html#clustering
-			:type model_config: dict
+			:type predict_config: dict
 
 			:return: Feature and probabilities
 			:rtype: :class:`nlptatl.dataset.Dataset`
