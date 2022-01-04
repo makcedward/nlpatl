@@ -12,10 +12,6 @@ import nlpatl.models.classification as nmcla
 import nlpatl.sampling.uncertainty as nsunc
 import nlpatl.sampling.clustering as nsclu
 
-CLUSTERING_MODEL_FOR_MISMATCH_FARTHEST_MAPPING_NAMES = {
-	'kmeans': nmclu.SkLearnClustering
-}
-
 SAMPLING_FOR_MISMATCH_FARTHEST_MAPPING_NAMES = {
 	'nearest_mean': nsclu.NearestMeanSampling(),
 }
@@ -99,18 +95,13 @@ class MismatchFarthestLearning(Learning):
 	def get_sampling_mapping(self):
 		return SAMPLING_FOR_MISMATCH_FARTHEST_MAPPING_NAMES
 
-	def get_clustering_mapping(self):
-		return CLUSTERING_MODEL_FOR_MISMATCH_FARTHEST_MAPPING_NAMES
-
 	def validate(self):
 		super().validate(['embeddings', 'clustering', 'classification'])
 
-	def learn_clustering(self, x: np.ndarray, model_config: dict):
-		_, self.clustering_model = self.init_clustering_model(
-			model_config=model_config
-			)
-
-		self.clustering_model.train(x)
+	def init_kmean(self, x: np.ndarray, model_config: dict=None):
+		_, kmean = self.init_clustering_model('kmeans', model_config)
+		kmean.train(x)
+		return kmean
 
 	def learn_classifier(self, x: np.ndarray, y: Union[List[str], List[int]]):
 		self.classification_model.train(x, y)
@@ -160,13 +151,13 @@ class MismatchFarthestLearning(Learning):
 		
 		# Train clustering
 		model_config = {
-			'n_clusters': len(learn_x),
+			'n_clusters': len(learn_x_features),
 			'init': learn_x_features,
 			'n_init': 1
 		}
-		self.learn_clustering(x=unannotated_x_features, 
+		kmean = self.init_kmean(x=unannotated_x_features, 
 			model_config=model_config)
-		clustering_predictions = self.clustering_model.predict_proba(unannotated_x_features)
+		clustering_predictions = kmean.predict_proba(unannotated_x_features)
 		clustering_preds = [learn_y_decoder[g] for g in clustering_predictions.groups]
 		clustering_values = clustering_predictions.values
 
