@@ -5,24 +5,25 @@ from nlpatl.sampling import Sampling
 
 
 class LeastConfidenceSampling(Sampling):
-	"""
-		Sampling data points according to the least confidence. Pick the lowest
-			probabilies for the highest class. https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.219.1846&rep=rep1&type=pdf
+    """
+    Sampling data points according to the least confidence. Pick the lowest
+            probabilies for the highest class. https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.219.1846&rep=rep1&type=pdf
 
-		:param name: Name of this sampling
-		:type name: str
+    :param name: Name of this sampling
+    :type name: str
     """
 
-	def __init__(self, name: str = 'least_confidence_sampling'):
-		super().__init__(name=name)
+    def __init__(self, name: str = "least_confidence_sampling"):
+        super().__init__(name=name)
 
-	def sample(self, data: np.ndarray, 
-		num_sample: int) -> Tuple[np.ndarray, np.ndarray]:
+    def sample(
+        self, data: np.ndarray, num_sample: int
+    ) -> Tuple[np.ndarray, np.ndarray]:
 
-		num_node = min(num_sample, len(data))
+        num_node = min(num_sample, len(data))
 
-		# Calucalte least confidence
-		least_confidences = 1 - np.max(data, axis=1)
-		indices = np.argpartition(-least_confidences, num_node-1)[:num_node]
+        # Calucalte least confidence
+        least_confidences = 1 - np.max(data, axis=1)
+        indices = np.argpartition(-least_confidences, num_node - 1)[:num_node]
 
-		return indices, least_confidences[indices]
+        return indices, least_confidences[indices]
