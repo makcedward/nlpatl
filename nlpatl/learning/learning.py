@@ -89,12 +89,12 @@ class Learning:
 			embeddings, embeddings_type, embeddings_model_config)
 
 		if classification:
-			self.classification_model_config = classification_model_config
+			self.classification_model_config = classification_model_config or {}
 			self.classification_name, self.classification_model = self.init_classification_model(
 				classification, classification_model_config)
 		
 		if clustering:
-			self.clustering_model_config = clustering_model_config
+			self.clustering_model_config = clustering_model_config or {}
 			self.clustering_name, self.clustering_model = self.init_clustering_model(
 				clustering, clustering_model_config)
 
