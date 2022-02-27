@@ -38,6 +38,7 @@ if __name__ == '__main__':
     # suites.append(unittest.TestLoader().loadTestsFromName('models.embeddings.test_sentence_transformers'))
     # suites.append(unittest.TestLoader().loadTestsFromName('models.embeddings.test_transformers'))
     # suites.append(unittest.TestLoader().loadTestsFromName('models.embeddings.test_torchvision'))
+    # suites.append(unittest.TestLoader().loadTestsFromName('models.embeddings.test_nemo'))
 
     # Clustering
     # suites.append(unittest.TestLoader().loadTestsFromName('models.clustering.test_sklearn_clustering'))
