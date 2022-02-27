@@ -7,3 +7,4 @@ Embeddings
    ./sentence_transformers
    ./transformers
    ./torchvision
+   ./nemo

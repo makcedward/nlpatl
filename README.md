@@ -21,8 +21,9 @@ pip install git+https://github.com/makcedward/nlpatl.git
 * [Custom Embeddings, Classification, Clustering and Learning function](https://colab.research.google.com/drive/1IB2OWzgoPCIOjjqhjX9boyK17K3bpgmz?usp=sharing)
 
 # Release
-### 0.0.3dev, Jan, 2022
+### 0.0.3dev, Mar, 2022
 * Support sci-kit learn extra library (Clustering)
+* Support Nemo's speaker recognition embeddings layer
 
 # Citation
 ```latex
