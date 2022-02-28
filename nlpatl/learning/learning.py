@@ -39,6 +39,7 @@ EMBEDDINGS_MODEL_FOR_ALL_MAPPING_NAMES = {
     "sentence_transformers": nme.SentenceTransformers,
     "transformers": nme.Transformers,
     "torch_vision": nme.TorchVision,
+    "nemo": nme.Nemo
 }
 
 CLUSTERING_MODEL_FOR_ALL_MAPPING_NAMES = {
@@ -369,15 +370,22 @@ class Learning:
             else:
                 self.learn_x = [x]
         elif type(x) is np.ndarray:
+            # Expecting image input
             if self.learn_x is not None:
                 self.learn_x = np.concatenate((self.learn_x, np.array([x])), axis=0)
             else:
                 self.learn_x = np.array([x])
+        elif isinstance(x, tuple):
+            # Expecting audio input, (np.ndarray, int)
+            if self.learn_x is not None:
+                self.learn_x.append(x[0])
+            else:
+                self.learn_x = [x[0]]
         else:
             assert (
                 False
             ), "{} data type does not support in `x` yet. " "Only support `{}`".format(
-                type(x), "`,`".join(["str", "int", "float", "list", "np.ndarray"])
+                type(x), "`,`".join(["str", "int", "float", "list", "np.ndarray", "tuple"])
             )
 
         if type(x_features) in [int, float, list]:
@@ -433,8 +441,11 @@ class Learning:
                 metadata += inputs + "\n"
             elif data_type == "image":
                 IPython.display.display(PIL.Image.fromarray(inputs))
-            # elif data_type == 'audio':
-            # IPython.display.display()
+            elif data_type == 'audio':
+                # Need force display the "display" object
+                IPython.display.display(
+                    IPython.display.Audio(inputs[0], rate=inputs[1])
+                )
 
             label = input(metadata)
             if not (label or label.strip()):
