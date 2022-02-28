@@ -37,8 +37,6 @@ class Transformers(Embeddings):
     :param nn_fwk: Neual network framework. Either pt (for PyTorch) or
             tf (for TensorFlow)
     :type nn_fwk: str
-    :param model_config: Model paramateters. Refer to https://huggingface.co/docs/transformers/index
-    :type model_config: dict
     :param name: Name of this embeddings
     :type name: str
 
